@@ -1,3 +1,17 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+app_lucky_number:
+    path: /lucky/number/{max}
+    controller: App\Controller\LuckyController::number
+    defaults:
+      max: 100
+
+find_by_id:
+  path: /session/findByID/{id}
+  controller: App\Controller\SessionController::findByID
+
+main_page:
+  path: /site/{idSite}
+  controller: App\Controller\SiteController::main_page
