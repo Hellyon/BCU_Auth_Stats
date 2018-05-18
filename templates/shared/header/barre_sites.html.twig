@@ -1,0 +1,11 @@
+{%  block barre_sites %}
+    <ul>
+        {%  for site in liste_sites %}
+            <li>
+                <a href="{{ path('page_recap_site', { 'idSite': site.idSite } ) }}">
+                    {{ site.nomSite }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

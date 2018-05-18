@@ -1,0 +1,13 @@
+{%  block header %}
+{% include 'shared/header.html.twig' %}
+{%  endblock %}
+
+{% block body %}
+    <div id="div_piechart"></div>
+    <div id="div_linechart"></div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        {{ gc_draw([piechart, linechart], ['div_piechart', 'div_linechart']) }}
+    </script>
+{% endblock %}

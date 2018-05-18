@@ -11,19 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SiteController extends Controller
 {
     /**
-     * @Route("/site", name="site")
+     * @Route("/{_locale}/site/{idSite}", name="page_recap_site")
      */
-    public function index()
-    {
-        return $this->render('site/index.html.twig', [
-            'controller_name' => 'SiteController',
-        ]);
-    }
-
-    /**
-     * @Route("/site/{idSite}", name="main_page")
-     */
-    public function main_page($idSite){
+    public function page_recap_site($idSite){
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
 
         if(!$site){
@@ -31,9 +21,11 @@ class SiteController extends Controller
         }
 
         $evolutionChart = $this->createWeeklyEvolutionBarChart($site);
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
         return $this->render('site/main_page.html.twig', [
-            'evolutionChart' => $evolutionChart
+            'evolutionChart' => $evolutionChart,
+            'liste_sites' => $sites,
         ]);
     }
 
@@ -44,8 +36,6 @@ class SiteController extends Controller
 
         $barChart = new BarChart();
         $dataTable = [['Jour','Nombre d\'Heures', 'Nombre de connexions']];
-
-        setlocale (LC_TIME, 'fr_FR.utf8');
 
         foreach($recapitulatifs as $recapitulatif){
             $jour = strftime("%A %e %B", $recapitulatif['date']->getTimestamp());

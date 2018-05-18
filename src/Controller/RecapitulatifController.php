@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Poste;
 use App\Entity\Recapitulatif;
-use App\Entity\Session;
+use App\Entity\Site;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class RecapitulatifController extends Controller
 {
     /**
-     * @Route("/recap/chart/{codePoste}", name="recap_chart")
+     * @Route("/{_locale}/recap/chart/{codePoste}", name="recap_chart")
      */
     public function index($codePoste)
     {
@@ -27,10 +27,12 @@ class RecapitulatifController extends Controller
 
         $pieChart = $this->createWeeklyPieChart($poste);
         $barChart = $this->createWeeklyBarChart($poste);
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
         return $this->render('recap/index.html.twig', [
             'piechart' => $pieChart,
             'barchart' => $barChart,
+            'liste_sites' => $sites,
             ]);
     }
 

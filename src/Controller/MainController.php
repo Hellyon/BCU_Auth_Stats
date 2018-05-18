@@ -9,19 +9,21 @@ use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class GlobalController extends Controller
+class MainController extends Controller
 {
     /**
-     * @Route("/global", name="global")
+     * @Route("/{_locale}", name="index")
      */
     public function index()
     {
         $pieChart = $this->createGlobalRecapPieChart();
         $lineChart = $this->creareGlobalRecapLineChart();
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
-        return $this->render('global/index.html.twig', [
+        return $this->render('index.html.twig', [
             'piechart' => $pieChart,
             'linechart' => $lineChart,
+            'liste_sites' => $sites,
         ]);
     }
 
@@ -31,9 +33,8 @@ class GlobalController extends Controller
             ->findAll1WeekBackward();
 
         $pieChart = new PieChart();
-
-        $dataTable = [['Site', 'Nombre d\'heures']];
         setlocale (LC_TIME, 'fr_FR.utf8');
+        $dataTable = [['Site', 'Nombre d\'heures']];
         foreach($recapitulatifs as $recapitulatif){
             $site = $this->getDoctrine()->getRepository(Site::class)->find($recapitulatif['idSite']);
             $dataTable[] = [$site->getNomSite(), $recapitulatif[1]/3600];
@@ -63,9 +64,8 @@ class GlobalController extends Controller
             ->findXWeeksBackward(4);
 
         $lineChart = new LineChart();
-
+        setlocale (LC_TIME, 'fr_FR.utf8');
         $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de connexions']];
-
         foreach($recapitulatifs as $recapitulatif){
             $jour = strftime("%A %e %B", $recapitulatif['date']->getTimestamp());
             $dataTable[] = [$jour, $recapitulatif[1]/3600, $recapitulatif[2]/1];

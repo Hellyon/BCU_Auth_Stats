@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Entity;
-
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,20 +19,26 @@ class Site
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $idSite;
-
     /**
      * @var string
      *
      * @ORM\Column(name="code_site", type="string", length=3, nullable=false, options={"fixed"=true})
      */
     private $codeSite;
-
     /**
      * @var string|null
      *
      * @ORM\Column(name="nom_site", type="string", length=30, nullable=true, options={"default"="NULL"})
      */
     private $nomSite = 'NULL';
+
+    /**
+     * @return int
+     */
+    public function getIdSite(): int
+    {
+        return $this->idSite;
+    }
 
     /**
      * @return null|string
