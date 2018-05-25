@@ -1,13 +1,20 @@
-{%  block header %}
-{% include 'shared/header.html.twig' %}
-{%  endblock %}
-
+{%  extends 'base.html.twig' %}
 {% block body %}
-    <div id="div_piechart"></div>
-    <div id="div_linechart"></div>
-
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        {{ gc_draw([piechart, linechart], ['div_piechart', 'div_linechart']) }}
-    </script>
+    {{ parent() }}
+        <div id="graph">
+            <ul class="col-lg-12">
+                <li class="col-lg-6">
+                    <ol id="div_piechart"></ol>
+                </li>
+                <li class="col-lg-6">
+                    <ol id="div_linechart"></ol>
+                </li>
+            </ul>
+            <script type="text/javascript">
+                {{ gc_draw([piechart, linechart], ['div_piechart', 'div_linechart']) }}
+            </script>
+        </div>
+        {%  if form is not defined %}
+            {{  render(controller('App\\Controller\\FormController::new')) }}
+        {%  endif %}
 {% endblock %}

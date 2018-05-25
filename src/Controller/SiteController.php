@@ -21,14 +21,28 @@ class SiteController extends Controller
         }
 
         $evolutionChart = $this->createWeeklyEvolutionBarChart($site);
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
         return $this->render('site/main_page.html.twig', [
             'evolutionChart' => $evolutionChart,
+            'site' => $site,
+        ]);
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function displaySites(){
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
+
+        return $this->render('shared/header.html.twig', [
             'liste_sites' => $sites,
         ]);
     }
 
+    /**
+     * @param $site
+     * @return BarChart
+     */
     private function createWeeklyEvolutionBarChart($site){
         $recapitulatifs = $this->getDoctrine()
             ->getRepository(Recapitulatif::class)

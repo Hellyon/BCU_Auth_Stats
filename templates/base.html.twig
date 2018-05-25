@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}BCU_Auth_Stats!{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('build/global.css') }}" />
+    {% endblock %}
+    {% block javascripts %}
+        <script src="{{ asset('build/app.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $( function() {
+                $( "#tabs" ).tabs({
+                    beforeLoad: function( event, ui ) {
+                        ui.jqXHR.fail(function() {
+                            ui.panel.html(
+                                "Erreur lors du chargement de la page");
+                        })
+                    }
+                }).addClass( "ui-tabs-vertical ui-helper-clearfix" );
+                $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
+            } );
+        </script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    {% endblock %}
+    <style>
+    </style>
+</head>
+<body>
+{% block header %}<header>{{ render(controller('App\\Controller\\SiteController::displaySites')) }}</header>{% endblock %}
+{% block body %}{%  endblock %}
+</body>
 </html>

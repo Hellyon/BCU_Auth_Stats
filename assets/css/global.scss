@@ -1,0 +1,10 @@
+// assets/css/global.scss
+
+// customize some Bootstrap variables
+$brand-primary: darken(#428bca, 20%);
+
+$icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
+$fa-font-path: "~font-awesome/fonts";
+
+// the ~ allows you to reference things in node_modules
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';

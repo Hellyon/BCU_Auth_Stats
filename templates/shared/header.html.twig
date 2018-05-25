@@ -1,2 +1,23 @@
-{%  include 'shared/header/banniere.html.twig' %}
-{%  include 'shared/header/barre_sites.html.twig' %}
+{%  block style %}
+<style>
+</style>
+{%  endblock %}
+
+{%  block barre_sites %}
+    <nav class="navbar navbar-inverse">
+        <div id="menu3" class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/fr">BCU Stats</a>
+            </div>
+            <ul class="nav navbar-nav">
+                {%  for site in liste_sites %}
+                    <li id="menu2" class="">
+                        <a id="menu" href="{{ path('page_recap_site', { 'idSite': site.idSite }) }}">
+                            {{ site.nomSite }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}

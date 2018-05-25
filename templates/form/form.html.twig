@@ -1,0 +1,29 @@
+{% block form %}
+    {% if lineChart is defined %}
+        {{ render(controller('App\\Controller\\MainController::index')) }}
+    {%  endif %}
+
+    {%  if form is defined and lineChart is not defined%}
+        {%  block form_row %}
+            {%  spaceless %}
+                {% form_theme form with 'bootstrap_4_horizontal_layout.html.twig' %}
+                <div class="container">
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        {{  form_widget(form) }}
+                    <button type="submit" class="btn btn-primary" href="recherche_globale">Rechercher</button>
+                    {{ form_end(form) }}
+                </div>
+            {%  endspaceless %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% block requestChart %}
+    {% if lineChart is defined %}
+        <div id="div_evolutionChartRequest"></div>
+
+        <script type="text/javascript">
+            {{ gc_draw(lineChart, 'div_evolutionChartRequest') }}
+        </script>
+    {%  endif %}
+{% endblock %}

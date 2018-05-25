@@ -1,0 +1,29 @@
+<style>
+    #graph {
+        display: inline-flex;
+        color: #fff;
+    }
+    #flex {
+        display: flex;
+        margin-left: 10em;
+    }
+</style>
+{%  block graphiques %}
+    <div class="tab-content">
+        <div class="tab-pane fade in active">
+            <p id="flex">Poste: {{ poste.codePoste }}</p>
+            <p id="flex">Adresse IP: {{ poste.ip }}</p>
+            <ul>
+                <li id="graph">
+                    <ol id="{{ div_piechart }}"></ol>
+                </li>
+                <li id="graph">
+                    <ol id="{{ div_barchart }}"></ol>
+                </li>
+            </ul>
+            <script type="text/javascript">
+                {{ gc_draw([piechart, barchart], [div_piechart, div_barchart]) }}
+            </script>
+        </div>
+    </div>
+{%  endblock %}

@@ -6,8 +6,8 @@ use App\Entity\Recapitulatif;
 use App\Entity\Site;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends Controller
 {
@@ -17,7 +17,7 @@ class MainController extends Controller
     public function index()
     {
         $pieChart = $this->createGlobalRecapPieChart();
-        $lineChart = $this->creareGlobalRecapLineChart();
+        $lineChart = $this->createGlobalRecapLineChart();
         $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
         return $this->render('index.html.twig', [
@@ -26,6 +26,7 @@ class MainController extends Controller
             'liste_sites' => $sites,
         ]);
     }
+
 
     private function createGlobalRecapPieChart(){
         $recapitulatifs = $this->getDoctrine()
@@ -45,8 +46,8 @@ class MainController extends Controller
         $pieChart->getData()->setArrayToDataTable($dataTable);
         $pieChart->getOptions()
             ->setTitle('Répartition du temps de connexion par site du '.$last_week.' au '.$today)
-            ->setHeight(500)
-            ->setWidth(900);
+            ->setHeight(450)
+            ->setWidth(750);
 
         $pieChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -58,7 +59,7 @@ class MainController extends Controller
         return $pieChart;
     }
 
-    private function creareGlobalRecapLineChart(){
+    private function createGlobalRecapLineChart(){
         $recapitulatifs = $this->getDoctrine()
             ->getRepository(Recapitulatif::class)
             ->findXWeeksBackward(4);
@@ -73,7 +74,7 @@ class MainController extends Controller
         $lineChart->getData()->setArrayToDataTable($dataTable);
 
         $lineChart->getOptions()->getChart()
-            ->setTitle('Evolution du nombre de connexions et du nombre d\'heures de connexion total sur X semaines' );
+            ->setTitle('Evolution du nombre de connexions et du temps de connexion sur 4 semaines' );
 
         $lineChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -83,8 +84,8 @@ class MainController extends Controller
             ->setFontSize(18);
 
         $lineChart->getOptions()
-            ->setHeight(500)
-            ->setWidth(900)
+            ->setHeight(450)
+            ->setWidth(750)
             ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
             ->setAxes(['y' => ['heures' => ['label' => 'Nombre d\'heures'], 'connexions' => ['label' => 'Nombre de connexions']]]);
 

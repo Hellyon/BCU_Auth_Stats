@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class RecapitulatifController extends Controller
 {
     /**
-     * @Route("/{_locale}/recap/chart/{codePoste}", name="recap_chart")
+     * @Route("/{_locale}/recap/chart/{codePoste}", defaults={"_locale": "fr"}, name="recap_chart")
      */
     public function index($codePoste)
     {
@@ -27,12 +27,15 @@ class RecapitulatifController extends Controller
 
         $pieChart = $this->createWeeklyPieChart($poste);
         $barChart = $this->createWeeklyBarChart($poste);
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
-        return $this->render('recap/index.html.twig', [
+        $div_piechart = "div_piechart".$codePoste;
+        $div_barchart = "div_barchart".$codePoste;
+        return $this->render('recap/recap_poste.twig', [
             'piechart' => $pieChart,
             'barchart' => $barChart,
-            'liste_sites' => $sites,
+            'div_piechart' => $div_piechart,
+            'div_barchart' => $div_barchart,
+            'poste' => $poste
             ]);
     }
 
@@ -54,8 +57,8 @@ class RecapitulatifController extends Controller
 
         $pieChart->getOptions()
             ->setTitle('Répartition du temps de connexion quotidien sur une semaine')
-            ->setHeight(500)
-            ->setWidth(900);
+            ->setHeight(450)
+            ->setWidth(750);
 
         $pieChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -93,8 +96,9 @@ class RecapitulatifController extends Controller
             ->setFontSize(18);
 
         $barChart->getOptions()
-            ->setHeight(400)
-            ->setWidth(900)
+            ->setHeight(450)
+            ->setWidth(750)
+            ->setOrientation('horizontal')
             ->setSeries([['axis' => 'Nombre d\'heures'], ['axis' => 'Nombre de connexions']])
             ->setAxes(['x' => [
                 'Nombre d\'heures' => ['label' => 'heures'],

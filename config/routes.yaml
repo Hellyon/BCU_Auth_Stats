@@ -15,3 +15,11 @@ page_recap_site:
   controller: App\Controller\SiteController::page_recap_site
   requirements:
     _locale: fr|en
+
+recherche_globale:
+  path: /{_locale}/recherche
+  controller: App\Controller\FormController::new
+  defaults:
+    _locale: fr
+  requirements:
+    _locale: fr|en
