@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Session
+ * Session.
  *
  * @ORM\Table(name="Session", indexes={@ORM\Index(name="code_poste", columns={"code_poste"})})
  * @ORM\Entity
@@ -58,5 +58,4 @@ class Session
      * })
      */
     private $codePoste;
-
 }

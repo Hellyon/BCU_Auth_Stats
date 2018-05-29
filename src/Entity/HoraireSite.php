@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * HoraireSite
+ * HoraireSite.
  *
  * @ORM\Table(name="Horaire_Site", indexes={@ORM\Index(name="id_site", columns={"id_site"}), @ORM\Index(name="IDX_892E607A655594C6", columns={"id_horaire"})})
  * @ORM\Entity

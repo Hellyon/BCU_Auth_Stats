@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Site
+ * Site.
  *
  * @ORM\Table(name="Site", uniqueConstraints={@ORM\UniqueConstraint(name="code_site", columns={"code_site"})})
  * @ORM\Entity

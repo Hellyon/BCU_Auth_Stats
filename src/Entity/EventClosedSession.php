@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * EventClosedSession
+ * EventClosedSession.
  *
  * @ORM\Table(name="Event_Closed_Session", indexes={@ORM\Index(name="IDX_B846247BED97CA4", columns={"id_session"})})
  * @ORM\Entity

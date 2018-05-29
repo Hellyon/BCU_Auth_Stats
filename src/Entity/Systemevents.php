@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Systemevents
+ * Systemevents.
  *
  * @ORM\Table(name="SystemEvents")
  * @ORM\Entity

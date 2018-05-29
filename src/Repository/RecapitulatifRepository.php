@@ -3,18 +3,15 @@
  * Created by PhpStorm.
  * User: ilbenjel
  * Date: 16/05/18
- * Time: 14:27
+ * Time: 14:27.
  */
 
 namespace App\Repository;
-
 
 use App\Entity\Poste;
 use App\Entity\Recapitulatif;
 use App\Entity\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Types\DateType;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class RecapitulatifRepository extends ServiceEntityRepository
@@ -26,6 +23,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
 
     /**
      * @param $poste
+     *
      * @return Recapitulatif[]
      */
     public function findByCodePosteAndAWeekBackward(?Poste $poste): array
@@ -45,6 +43,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
 
     /**
      * @param Site|null $site
+     *
      * @return Recapitulatif[]
      */
     public function findBySiteAndAWeekBackward(?Site $site): array
@@ -65,6 +64,10 @@ class RecapitulatifRepository extends ServiceEntityRepository
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
         return $query->execute();
     }
+
+    /**
+     * @return array
+     */
     public function findAll1WeekBackward(): array
     {
         $entityManager = $this->getEntityManager();
@@ -83,8 +86,13 @@ class RecapitulatifRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function findXWeeksBackward($weeks){
-
+    /**
+     * @param $weeks
+     *
+     * @return mixed
+     */
+    public function findXWeeksBackward($weeks)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -92,14 +100,21 @@ class RecapitulatifRepository extends ServiceEntityRepository
             WHERE r.date BETWEEN :day_backward AND :current_date 
             GROUP BY r.date 
             ORDER BY r.date ASC')
-            ->setParameter('day_backward', new \DateTime('-'.(7*$weeks-1).' Day'))
+            ->setParameter('day_backward', new \DateTime('-'.(7 * $weeks - 1).' Day'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
         return $query->execute();
     }
 
-    public function findByPeriod($debut, $fin){
+    /**
+     * @param $debut
+     * @param $fin
+     *
+     * @return mixed
+     */
+    public function findByPeriod($debut, $fin)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -114,7 +129,13 @@ class RecapitulatifRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function findByDate($date){
+    /**
+     * @param $date
+     *
+     * @return mixed
+     */
+    public function findByDate($date)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT SUM(r.dureeCumul), SUM(r.nbConnexions), s.nomSite
