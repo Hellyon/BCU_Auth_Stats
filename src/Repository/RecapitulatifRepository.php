@@ -44,7 +44,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $poste
+     * @param Site|null $site
      * @return Recapitulatif[]
      */
     public function findBySiteAndAWeekBackward(?Site $site): array

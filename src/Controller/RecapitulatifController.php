@@ -4,17 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Poste;
 use App\Entity\Recapitulatif;
-use App\Entity\Site;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart;
-use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Histogram;
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 class RecapitulatifController extends Controller
 {
     /**
      * @Route("/{_locale}/recap/chart/{codePoste}", defaults={"_locale": "fr"}, name="recap_chart")
+     * @param $codePoste
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function index($codePoste)
     {
