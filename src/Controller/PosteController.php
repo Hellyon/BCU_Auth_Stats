@@ -11,9 +11,6 @@ namespace App\Controller;
 
 use App\Entity\Poste;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use App\Entity\Recapitulatif;
-use App\Entity\Site;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PosteController extends Controller

@@ -18,6 +18,7 @@ class MainController extends Controller
     {
         $pieChart = $this->createGlobalRecapPieChart();
         $lineChart = $this->createGlobalRecapLineChart();
+
         $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
         return $this->render('index.html.twig', [

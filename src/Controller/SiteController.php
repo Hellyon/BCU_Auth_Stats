@@ -12,6 +12,8 @@ class SiteController extends Controller
 {
     /**
      * @Route("/{_locale}/site/{idSite}", name="page_recap_site")
+     * @param $idSite
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function page_recap_site($idSite){
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
@@ -25,17 +27,6 @@ class SiteController extends Controller
         return $this->render('site/main_page.html.twig', [
             'evolutionChart' => $evolutionChart,
             'site' => $site,
-        ]);
-    }
-
-    /**
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function displaySites(){
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
-
-        return $this->render('shared/header.html.twig', [
-            'liste_sites' => $sites,
         ]);
     }
 
@@ -80,5 +71,16 @@ class SiteController extends Controller
 
 
         return $barChart;
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function displaySites(){
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
+
+        return $this->render('shared/header.html.twig', [
+            'liste_sites' => $sites,
+        ]);
     }
 }

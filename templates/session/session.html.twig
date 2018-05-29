@@ -5,10 +5,11 @@
     </style>
 
     <div class="example-wrapper">
-        <li>Numéro de Session : {{ session.idSession }}</li>
-            <ul>Heure ouverture : {{ session.heureDebut|date("H:i:s") }}</ul>
-            <ul>Heure fermetuer : {{ session.heureFin|date("H:i:s") }}</ul>
-            <ul>Utlisateur : {{ session.utilisateur }}</ul>
-            <ul>Date : {{ session.date|date("Y-m-d") }}</ul>
+        <ul>Numéro de Session : {{ session.idSession }}
+            <li>Heure ouverture : {{ session.heureDebut|date("H:i:s") }}</li>
+            <li>Heure fermetuer : {{ session.heureFin|date("H:i:s") }}</li>
+            <li>Utlisateur : {{ session.utilisateur }}</li>
+            <li>Date : {{ session.date|date("Y-m-d") }}</li>
+        </ul>
     </div>
 {%  endblock %}
