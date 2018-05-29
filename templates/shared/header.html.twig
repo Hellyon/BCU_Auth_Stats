@@ -1,0 +1,23 @@
+{%  block style %}
+<style>
+</style>
+{%  endblock %}
+
+{%  block barre_sites %}
+    <nav class="navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"><img src="{{ asset('/images/bannuiere.png') }}" alt="BCU Stats" class="img-responsive"></a>
+            </div>
+            <ul class="nav navbar-nav">
+                {%  for site in liste_sites %}
+                    <li class="">
+                        <a href="{{ path('page_recap_site', { 'idSite': site.idSite }) }}">
+                            {{ site.nomSite }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}

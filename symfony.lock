@@ -1,4 +1,7 @@
 {
+    "cmen/google-charts-bundle": {
+        "version": "3.0.1"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -254,6 +257,9 @@
             "ref": "179470cb6492db92dffee208cfdb436f175c93b4"
         }
     },
+    "symfony/polyfill-ctype": {
+        "version": "v1.8.0"
+    },
     "symfony/polyfill-intl-icu": {
         "version": "v1.8.0"
     },
@@ -373,6 +379,15 @@
     },
     "symfony/yaml": {
         "version": "v4.0.9"
+    },
+    "twig/extensions": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "4851df0afc426b8f07204379d21fca25b6df5d68"
+        }
     },
     "twig/twig": {
         "version": "v2.4.8"
