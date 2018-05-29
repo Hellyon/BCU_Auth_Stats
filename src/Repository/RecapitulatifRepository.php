@@ -113,4 +113,20 @@ class RecapitulatifRepository extends ServiceEntityRepository
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
         return $query->execute();
     }
+
+    public function findByDate($date){
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT SUM(r.dureeCumul), SUM(r.nbConnexions), s.nomSite
+            FROM App\Entity\Recapitulatif r, App\Entity\Site s, App\Entity\Poste p
+            WHERE r.date = :dateD
+            AND p.codePoste = r.codePoste
+            AND p.idSite = s.idSite
+            GROUP BY s.idSite 
+            ORDER BY SUM(r.dureeCumul) ASC')
+            ->setParameter('dateD', new \DateTime($date));
+
+        // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), s.nomSite
+        return $query->execute();
+    }
 }

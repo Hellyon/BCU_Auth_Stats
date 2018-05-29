@@ -10,6 +10,7 @@ twig:
         - bootstrap_3_layout.html.twig
         - bootstrap_3_horizontal_layout.html.twig
         - bootstrap_4_layout.html.twig
+        - form/bootstrap_4_layout_no_label_error.html.twig
         - bootstrap_4_horizontal_layout.html.twig
 
         # Foundation

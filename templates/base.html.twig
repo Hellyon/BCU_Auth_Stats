@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>{% block title %}BCU_Auth_Stats!{% endblock %}</title>
+    <title>{% block title %}BCU Stats{% endblock %}</title>
     {% block stylesheets %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="{{ asset('build/app.css') }}">
@@ -30,7 +30,7 @@
     <style>
     </style>
 </head>
-<body>
+<body class="background">
 {% block header %}<header>{{ render(controller('App\\Controller\\SiteController::displaySites')) }}</header>{% endblock %}
 {% block body %}{%  endblock %}
 </body>

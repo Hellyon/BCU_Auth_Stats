@@ -60,14 +60,8 @@ class SiteController extends Controller
         ->setTitle('Temps d\'utilisation et nombre de connexions par jour')
         ->setSubtitle('Nombre d\'heures à gauche, Nombre de connexions à droite');
 
-        $barChart->getOptions()->getTitleTextStyle()
-            ->setBold(true)
-            ->setColor('#009900')
-            ->setItalic(true)
-            ->setFontName('Arial')
-            ->setFontSize(18);
-
         $barChart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
             ->setHeight(400)
             ->setWidth(900)
             ->setOrientation('horizontal')
@@ -76,6 +70,14 @@ class SiteController extends Controller
                 'connexions' => ['side' => 'top', 'label' => 'Nombre de connexions']],
                 'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures']
             ]);
+
+        $barChart->getOptions()->getTitleTextStyle()
+            ->setBold(true)
+            ->setColor('#009900')
+            ->setItalic(true)
+            ->setFontName('Arial')
+            ->setFontSize(18);
+
 
         return $barChart;
     }

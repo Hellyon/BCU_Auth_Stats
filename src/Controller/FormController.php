@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Recapitulatif;
 use App\Entity\Recherche;
@@ -10,6 +11,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\Range;
+
 class FormController extends Controller
 {
     /**
@@ -23,32 +27,58 @@ class FormController extends Controller
 
         $formulaire->handleRequest($request);
 
+        $fail = false;
+
         if ($formulaire->isSubmitted() && $formulaire->isValid()) {
             // $form->getData() holds the submitted values
             // but, the original `$task` variable has also been updated
             $recherche = $formulaire->getData();
 
-            return $this->redirect($this->generateUrl('success', [
-                'fin' => $recherche->getDebut()->getTimeStamp(),
-                'debut' => $recherche->getFin()->getTimeStamp()]));
+            if(!$recherche->getFin() || $recherche->getFin() == $recherche->getDebut()){
+                return $this->redirect($this->generateUrl('date', [
+                    'date' => $recherche->getDebut()->getTimeStamp()
+                ]));
+            }
+            else {
+                return $this->redirect($this->generateUrl('period', [
+                    'fin' => $recherche->getDebut()->getTimeStamp(),
+                    'debut' => $recherche->getFin()->getTimeStamp()]));
+            }
 
+        }
+        if($formulaire->isSubmitted()){
+            $fail = true;
         }
         return $this->render('form/form.html.twig', [
             'form' => $formulaire->createView(),
+            'fail' => $fail,
         ]);
     }
 
     /**
-     * @Route("/success/{debut}/{fin}", name="success")
+     * @Route("/date/{date}", name="date")
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function success($debut, $fin){
+    public function recherche_date($date){
         $formulaire = $this->createRequestForm();
-        $lineChart = $this->createRequestedLineChart($debut, $fin);
+        $requestChart = $this->createRequestedDateChart($date);
 
         return $this->render('form/form.html.twig', [
             'form' => $formulaire->createView(),
-            'lineChart' => $lineChart,
+            'requestChart' => $requestChart,
+        ]);
+    }
+    /**
+     * @Route("/period/{debut}/{fin}", name="period")
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function recherche_period($debut, $fin){
+        $formulaire = $this->createRequestForm();
+        $requestChart = $this->createRequestedLineChart($debut, $fin);
+
+        return $this->render('form/form.html.twig', [
+            'form' => $formulaire->createView(),
+            'requestChart' => $requestChart,
         ]);
     }
 
@@ -60,15 +90,19 @@ class FormController extends Controller
         return $this->createFormBuilder($recherche)
             ->setAction($this->generateUrl('recherche_globale'))
             ->add('debut', DateType::class, [
+                'label' => "Date Début",
                 'widget' => 'single_text',
-
                 // adds a class that can be selected in JavaScript
-                'attr' => ['class' => 'js-datepicker']])
+                'attr' => ['class' => 'js-datepicker'],
+            ])
             ->add('fin', DateType::class, [
+                'label' => "Date Fin",
                 'widget' => 'single_text',
-
+                'required' => false,
                 // adds a class that can be selected in JavaScript
-                'attr' => ['class' => 'js-datepicker']])
+                'attr' => ['class' => 'js-datepicker'],
+            ])
+            ->add('rechercher', SubmitType::class)
             ->getForm();
     }
 
@@ -105,11 +139,53 @@ class FormController extends Controller
             ->setFontSize(18);
 
         $lineChart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
             ->setHeight(450)
-            ->setWidth(900)
+            ->setWidth('45%')
             ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
             ->setAxes(['y' => ['heures' => ['label' => 'Nombre d\'heures'], 'connexions' => ['label' => 'Nombre de connexions']]]);
 
         return $lineChart;
+    }
+    private function createRequestedDateChart($date){
+        $dateD = strftime("%Y-%m-%d", $date);
+
+        $recapitulatifs = $this->getDoctrine()
+            ->getRepository(Recapitulatif::class)
+            ->findByDate($dateD);
+
+        $chart = new BarChart();
+
+        setlocale (LC_TIME, 'fr_FR.utf8');
+        $date = strftime("%A %e %B", $date);
+
+        $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de connexions']];
+        foreach($recapitulatifs as $recapitulatif){
+            $dataTable[] = [$recapitulatif['nomSite'], $recapitulatif[1]/3600, $recapitulatif[2]/1];
+        }
+        $chart->getData()->setArrayToDataTable($dataTable);
+
+        $chart->getOptions()->getChart()
+            ->setTitle('Nombre de connexions et temps de connexion du '.$date.' pour chaque site.');
+
+        $chart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
+            ->setHeight(450)
+            ->setWidth('45%')
+            ->setOrientation('horizontal')
+            ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
+            ->setAxes(['x' => [
+                'connexions' => ['side' => 'top', 'label' => 'Nombre de connexions']],
+                'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures']
+            ]);
+
+        $chart->getOptions()->getTitleTextStyle()
+            ->setBold(true)
+            ->setColor('#009900')
+            ->setItalic(true)
+            ->setFontName('Arial')
+            ->setFontSize(18);
+
+        return $chart;
     }
 }

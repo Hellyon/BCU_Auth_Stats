@@ -9,23 +9,30 @@
 namespace App\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+/**
+ * Class Recherche
+ * @package App\Entity
+ * @Assert\Callback("validate")
+ */
 class Recherche
 {
     /**
      * @Assert\NotBlank()
      * @Assert\Type("\DateTime")
+     * @Assert\LessThanOrEqual("today UTC")
      */
     protected $debut;
     /**
-     * @Assert\NotBlank()
      * @Assert\Type("\DateTime")
+     * @Assert\LessThanOrEqual("today UTC")
      */
     protected $fin;
     /**
      * @return \DateTime
      */
-    public function getDebut(): \DateTime
+    public function getDebut(): ?\DateTime
     {
         return $this->debut;
     }
@@ -41,7 +48,7 @@ class Recherche
     /**
      * @return \DateTime
      */
-    public function getFin(): \DateTime
+    public function getFin(): ?\DateTime
     {
         return $this->fin;
     }
@@ -54,4 +61,12 @@ class Recherche
         $this->fin = $fin;
     }
 
+    public function validate(ExecutionContextInterface $context, $payload){
+        if($this->getFin()){
+            if($this->getDebut()->getTimestamp() > $this->getFin()->getTimestamp()){
+                $context->buildViolation('La date de début doit être inférieure à la date de fin')
+                    ->addViolation();
+            }
+        }
+    }
 }

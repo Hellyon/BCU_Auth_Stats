@@ -1,13 +1,15 @@
 {%  block liste_poste %}
-    <div id="tabs" class="nav nav-pills">
-        <ul class="nav nav-pills">
-            {%  for poste in liste_postes %}
-                <li>
-                    <a data-toggle="pill" href="{{ path('recap_chart', {'codePoste': poste.codePoste})}}">
-                        {{ poste.codePoste }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="container-fluid col-md-12">
+        <div id="tabs" class="nav nav-pills">
+            <ul class="nav nav-pills">
+                {% for poste in liste_postes %}
+                    <li class="nav-pills container">
+                        <a data-toggle="pill" href="{{ path('recap_chart', {'codePoste': poste.codePoste})}}">
+                            {{ poste.codePoste }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 {% endblock %}

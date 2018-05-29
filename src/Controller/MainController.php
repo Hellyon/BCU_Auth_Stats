@@ -45,9 +45,10 @@ class MainController extends Controller
         $today = strftime("%A %e %B");
         $pieChart->getData()->setArrayToDataTable($dataTable);
         $pieChart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
             ->setTitle('Répartition du temps de connexion par site du '.$last_week.' au '.$today)
             ->setHeight(450)
-            ->setWidth(750);
+            ->setWidth('45%');
 
         $pieChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -76,18 +77,19 @@ class MainController extends Controller
         $lineChart->getOptions()->getChart()
             ->setTitle('Evolution du nombre de connexions et du temps de connexion sur 4 semaines' );
 
+        $lineChart->getOptions()
+            ->setHeight(450)
+            ->setBackgroundColor('#EAEAEA')
+            ->setWidth('45%')
+            ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
+            ->setAxes(['y' => ['heures' => ['label' => 'Nombre d\'heures'], 'connexions' => ['label' => 'Nombre de connexions']]]);
+
         $lineChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
             ->setColor('#009900')
             ->setItalic(true)
             ->setFontName('Arial')
             ->setFontSize(18);
-
-        $lineChart->getOptions()
-            ->setHeight(450)
-            ->setWidth(750)
-            ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
-            ->setAxes(['y' => ['heures' => ['label' => 'Nombre d\'heures'], 'connexions' => ['label' => 'Nombre de connexions']]]);
 
         return $lineChart;
     }

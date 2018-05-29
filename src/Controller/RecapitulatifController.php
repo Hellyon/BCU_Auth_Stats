@@ -56,9 +56,10 @@ class RecapitulatifController extends Controller
         $pieChart->getData()->setArrayToDataTable($dataTable);
 
         $pieChart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
             ->setTitle('Répartition du temps de connexion quotidien sur une semaine')
             ->setHeight(450)
-            ->setWidth(750);
+            ->setWidth('45%');
 
         $pieChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -88,6 +89,17 @@ class RecapitulatifController extends Controller
         ->setTitle('Temps d\'utilisation et nombre de connexions par jour')
         ->setSubtitle('Nombre d\'heures à gauche, Nombre de connexions à droite');
 
+        $barChart->getOptions()
+            ->setBackgroundColor('#EAEAEA')
+            ->setHeight(450)
+            ->setWidth('45%')
+            ->setOrientation('horizontal')
+            ->setSeries([['axis' => 'Nombre d\'heures'], ['axis' => 'Nombre de connexions']])
+            ->setAxes(['x' => [
+                'Nombre d\'heures' => ['label' => 'heures'],
+                'Nombre de connexions' => ['side' => 'top', 'label' => 'connexions']]
+            ]);
+
         $barChart->getOptions()->getTitleTextStyle()
             ->setBold(true)
             ->setColor('#009900')
@@ -95,15 +107,6 @@ class RecapitulatifController extends Controller
             ->setFontName('Arial')
             ->setFontSize(18);
 
-        $barChart->getOptions()
-            ->setHeight(450)
-            ->setWidth(750)
-            ->setOrientation('horizontal')
-            ->setSeries([['axis' => 'Nombre d\'heures'], ['axis' => 'Nombre de connexions']])
-            ->setAxes(['x' => [
-                'Nombre d\'heures' => ['label' => 'heures'],
-                'Nombre de connexions' => ['side' => 'top', 'label' => 'connexions']]
-            ]);
 
         return $barChart;
     }
