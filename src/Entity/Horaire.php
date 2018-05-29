@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Horaire
+ * Horaire.
  *
  * @ORM\Table(name="Horaire")
  * @ORM\Entity

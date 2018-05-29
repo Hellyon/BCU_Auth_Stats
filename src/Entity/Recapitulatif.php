@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Recapitulatif
+ * Recapitulatif.
  *
  * @ORM\Table(name="Recapitulatif", indexes={@ORM\Index(name="code_poste", columns={"code_poste"})})
  * @ORM\Entity(repositoryClass="App\Repository\RecapitulatifRepository")
@@ -79,7 +79,6 @@ class Recapitulatif
         return $this->dureeOuverture;
     }
 
-
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
@@ -89,5 +88,4 @@ class Recapitulatif
     {
         return $this->codePoste;
     }
-
 }

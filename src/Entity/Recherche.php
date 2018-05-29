@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: ilbenjel
  * Date: 23/05/18
- * Time: 16:18
+ * Time: 16:18.
  */
 
 namespace App\Entity;
@@ -12,8 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Class Recherche
- * @package App\Entity
+ * Class Recherche.
+ *
  * @Assert\Callback("validate")
  */
 class Recherche
@@ -29,6 +29,7 @@ class Recherche
      * @Assert\LessThanOrEqual("today UTC")
      */
     protected $fin;
+
     /**
      * @return \DateTime
      */
@@ -61,9 +62,10 @@ class Recherche
         $this->fin = $fin;
     }
 
-    public function validate(ExecutionContextInterface $context, $payload){
-        if($this->getFin()){
-            if($this->getDebut()->getTimestamp() > $this->getFin()->getTimestamp()){
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->getFin() && $this->getDebut()) {
+            if ($this->getDebut()->getTimestamp() > $this->getFin()->getTimestamp()) {
                 $context->buildViolation('La date de début doit être inférieure à la date de fin')
                     ->addViolation();
             }
