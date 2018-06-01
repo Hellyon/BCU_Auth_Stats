@@ -150,4 +150,35 @@ class RecapitulatifRepository extends ServiceEntityRepository
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), s.nomSite
         return $query->execute();
     }
+
+    public function minDureeOuverturePoste($codePoste){
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT MIN(r.dureeOuverture)
+            FROM App\Entity\Recapitulatif r
+            WHERE r.codePoste = :codePoste
+            AND r.date BETWEEN :last_week AND :current_date')
+            ->setParameter('codePoste', $codePoste)
+            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('current_date', new \DateTime());
+
+        // returns the value of MIN(r.dureeOuverture)
+        return $query->getOneOrNullResult();
+    }
+    public function calculateUseRate($codePoste){
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT SUM(r.dureeCumul)/ SUM(r.dureeOuverture)*100 AS useRate
+            FROM App\Entity\Recapitulatif r
+            WHERE r.codePoste = :codePoste
+            AND r.date BETWEEN :last_week AND :current_date 
+            GROUP BY r.codePoste 
+            ORDER BY r.date ASC')
+            ->setParameter('codePoste', $codePoste)
+            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('current_date', new \DateTime());
+
+        // returns an array of SUM(r.dureeCumul), SUM(r.dureeOuverture)
+        return $query->getSingleResult();
+    }
 }

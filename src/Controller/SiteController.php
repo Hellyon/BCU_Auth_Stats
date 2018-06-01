@@ -45,13 +45,13 @@ class SiteController extends Controller
             ->getRepository(Recapitulatif::class)
             ->findBySiteAndAWeekBackward($site);
 
-        $dataTable = [['Jour', 'Nombre d\'Heures', 'Nombre de connexions']];
+        $dataTable = [['Jour', 'Nombre d\'Heures', 'Nombre de sessions']];
 
         foreach ($recapitulatifs as $recapitulatif) {
             $jour = strftime('%A %e %B', $recapitulatif['date']->getTimestamp());
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
-        $title = 'Temps d\'utilisation et nombre de connexions par jour';
+        $title = 'Temps d\'utilisation et nombre de sessions sur une semaine';
 
         return ChartBuilder::createBarChart($title, $dataTable);
     }

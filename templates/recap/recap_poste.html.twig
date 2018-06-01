@@ -1,0 +1,21 @@
+{%  block graphiques %}
+    <div class="tab-content container-fluid">
+        <div class="tab-pane fade in active cadre col-md-11">
+            <p class="col-md-12 col-sm-9 text-center">Poste: {{ poste.codePoste }}</p>
+            <p class="col-md-12 text-center">Adresse IP: {{ poste.ip }}</p>
+            {% if noDataFound is defined %}
+                <p class="col-md-12 alert-danger text-center">{{ noDataFound }}</p>
+            {% else %}
+                <p class="col-md-12 alert-info text-center">{{ useRateMessage }}</p>
+                <br/>
+                <div class="row">
+                    <div class="col-md-6" id="{{ div_piechart }}"></div>
+                    <div class="col-md-6" id="{{ div_barchart }}"></div>
+                    <script type="text/javascript">
+                        {{ gc_draw([piechart, barchart], [div_piechart, div_barchart]) }}
+                    </script>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{%  endblock %}
