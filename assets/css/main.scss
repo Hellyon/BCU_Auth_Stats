@@ -26,5 +26,13 @@
 .navbar-brand{
   color: whitesmoke;
 }
-
+.postes{
+  max-height: 560px;
+  min-width: 150px;
+  overflow-y: auto;
+  direction: rtl;
+}
 /* 1B2E42  3667AB 3E567A*/
+.bouton-2-style{
+  background-color: #EAEAEA;
+}

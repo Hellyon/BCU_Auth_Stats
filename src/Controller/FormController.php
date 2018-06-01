@@ -106,11 +106,11 @@ class FormController extends Controller
         setlocale(LC_TIME, 'fr_FR.utf8');
         $date = strftime('%A %e %B', $date);
 
-        $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de connexions']];
+        $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de sessions']];
         foreach ($recapitulatifs as $recapitulatif) {
             $dataTable[] = [$recapitulatif['nomSite'], $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
-        $title = 'Nombre de connexions et temps de connexion du '.$date.' pour chaque site';
+        $title = 'Nombre de sessions et temps de connexion du '.$date.' pour chaque site';
 
         return ChartBuilder::createBarChart($title, $dataTable);
     }
@@ -147,13 +147,13 @@ class FormController extends Controller
         $debut = strftime('%A %e %B', $debut);
         $fin = strftime('%A %e %B', $fin);
 
-        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de connexions']];
+        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de sessions']];
         foreach ($recapitulatifs as $recapitulatif) {
             $jour = strftime('%A %e %B', $recapitulatif['date']->getTimestamp());
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
 
-        $title = 'Evolution du nombre de connexions et du temps de connexion du '.$fin.' au '.$debut;
+        $title = 'Evolution du nombre de sessions et du temps de connexion du '.$fin.' au '.$debut;
 
         return ChartBuilder::createLineChart($title, $dataTable);
     }

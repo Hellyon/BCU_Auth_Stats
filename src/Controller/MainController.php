@@ -60,12 +60,12 @@ class MainController extends Controller
             ->findXWeeksBackward(4);
 
         setlocale(LC_TIME, 'fr_FR.utf8');
-        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de connexions']];
+        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de sessions']];
         foreach ($recapitulatifs as $recapitulatif) {
             $jour = strftime('%A %e %B', $recapitulatif['date']->getTimestamp());
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
-        $title = 'Evolution du nombre de connexions et du temps de connexion sur 4 semaines';
+        $title = 'Evolution du nombre de sessions et du temps de connexion sur 4 semaines';
 
         return ChartBuilder::createLineChart($title, $dataTable);
     }

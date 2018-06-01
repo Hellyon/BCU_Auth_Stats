@@ -20,9 +20,26 @@ class RecapitulatifController extends Controller
     public function index($codePoste)
     {
         $poste = $this->getDoctrine()->getRepository(Poste::class)->find($codePoste);
-
         if (!$poste) {
             throw $this->createNotFoundException('Pas de poste trouvé pour le code'.$codePoste);
+        }
+    $useRateMessage = '';
+        $check = $this->getDoctrine()->getRepository(Recapitulatif::class)->minDureeOuverturePoste($codePoste);
+        if(!empty($check[1])) {
+            if ($check[1] == 1) {
+                $useRateMessage = 'Horaires d\'ouverture dépassées, veuillez les mettre à jour via le script afin de profiter de la fonctionnalité';
+            } else {
+                $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)->calculateUseRate($codePoste);
+                $useRateMessage = 'Le Poste a été utilisé à ' . $useRate['useRate'] . '% au cours de la dernière semaine';
+            }
+        }
+        if(!$useRateMessage){
+            $noDataFound = 'Pas de données pour ce poste';
+
+            return $this->render('recap/recap_poste.html.twig', [
+                'poste' => $poste,
+                'noDataFound' => $noDataFound,
+            ]);
         }
 
         $pieChart = $this->createWeeklyPieChart($poste);
@@ -31,12 +48,13 @@ class RecapitulatifController extends Controller
         $div_piechart = 'div_piechart'.$codePoste;
         $div_barchart = 'div_barchart'.$codePoste;
 
-        return $this->render('recap/recap_poste.twig', [
+        return $this->render('recap/recap_poste.html.twig', [
             'piechart' => $pieChart,
             'barchart' => $barChart,
             'div_piechart' => $div_piechart,
             'div_barchart' => $div_barchart,
             'poste' => $poste,
+            'useRateMessage' => $useRateMessage,
             ]);
     }
 
@@ -73,13 +91,13 @@ class RecapitulatifController extends Controller
             ->getRepository(Recapitulatif::class)
             ->findByCodePosteAndAWeekBackward($poste);
 
-        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de connexions']];
+        $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de sessions']];
         setlocale(LC_TIME, 'fr_FR.utf8');
         foreach ($recapitulatifs as $recapitulatif) {
             $jour = strftime('%A %e %B', $recapitulatif->getDate()->getTimestamp());
             $dataTable[] = [$jour, $recapitulatif->getDureeCumul() / 3600, $recapitulatif->getNbConnexions()];
         }
-        $title = 'Temps d\'utilisation et nombre de connexions par jour';
+        $title = 'Temps d\'utilisation et nombre de sessions par jour';
 
         return ChartBuilder::createBarChart($title, $dataTable);
     }
