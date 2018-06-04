@@ -1,6 +1,6 @@
 {% block form %}
     {% if requestChart is defined or fail == true %}
-        {{ render(controller('App\\Controller\\MainController::index')) }}
+        {{ render(controller('App\\Controller\\MainController::indexAction')) }}
     {%  endif %}
     <div class="container-fluid">
     {%  if form is defined %}

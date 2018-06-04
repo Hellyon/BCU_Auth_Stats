@@ -13,17 +13,14 @@ class MainController extends Controller
     /**
      * @Route("/{_locale}", name="index")
      */
-    public function index()
+    public function indexAction()
     {
         $pieChart = $this->createGlobalRecapPieChart();
         $lineChart = $this->createGlobalRecapLineChart();
 
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
-
         return $this->render('index.html.twig', [
             'piechart' => $pieChart,
             'linechart' => $lineChart,
-            'liste_sites' => $sites,
         ]);
     }
 

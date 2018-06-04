@@ -17,7 +17,7 @@ class RecapitulatifController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function index($codePoste)
+    public function recapChartAction($codePoste)
     {
         $poste = $this->getDoctrine()->getRepository(Poste::class)->find($codePoste);
         if (!$poste) {

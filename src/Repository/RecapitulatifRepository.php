@@ -30,7 +30,8 @@ class RecapitulatifRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
-            'SELECT r FROM App\Entity\Recapitulatif r
+            'SELECT r 
+                  FROM App\Entity\Recapitulatif r
                   WHERE r.codePoste = :poste
                   AND r.date BETWEEN :last_week AND :current_date')
             ->setParameter('poste', $poste)

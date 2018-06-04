@@ -1,24 +1,28 @@
 index:
   path: /{_locale}
   defaults:
-    _controller: App\Controller\MainController::index
+    _controller: App\Controller\MainController::indexAction
     _locale: fr
 
 find_by_id:
   path: /{_locale}/session/findByID/{id}
-  controller: App\Controller\SessionController::findByID
+  controller: App\Controller\SessionController::findByIDAction
+  defaults:
+    _locale: fr
   requirements:
     _locale: fr|en
 
-page_recap_site:
+recap_site:
   path: /{_locale}/site/{idSite}
-  controller: App\Controller\SiteController::page_recap_site
+  controller: App\Controller\SiteController::recapSiteAction
+  defaults:
+    _locale: fr
   requirements:
     _locale: fr|en
 
 recherche_globale:
   path: /{_locale}/recherche
-  controller: App\Controller\FormController::new
+  controller: App\Controller\FormController::newFormAction
   defaults:
     _locale: fr
   requirements:

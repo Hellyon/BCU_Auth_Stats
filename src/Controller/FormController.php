@@ -14,13 +14,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class FormController extends Controller
 {
     /**
-     * @Route("/{_locale}/recherche", name="recherche_globale")
+     * @Route("/{_locale}/recherche", name="recherche_globale", defaults={"_locale": "fr"})
      *
      * @param Request $request
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
-    public function new(Request $request)
+    public function newFormAction(Request $request)
     {
         $formulaire = $this->createRequestForm();
         $formulaire->handleRequest($request);
@@ -36,7 +36,7 @@ class FormController extends Controller
                     'date' => $recherche->getDebut()->getTimeStamp(),
                 ]));
             } else {
-                return $this->redirect($this->generateUrl('period', [
+                return $this->redirect($this->generateUrl('periode', [
                     'fin' => $recherche->getDebut()->getTimeStamp(),
                     'debut' => $recherche->getFin()->getTimeStamp(), ]));
             }
@@ -78,13 +78,14 @@ class FormController extends Controller
     }
 
     /**
-     * @Route("/date/{date}", name="date")
+     * @Route("/{_locale}/date/{date}", name="date", defaults={"_locale": "fr"})
+     * @
      *
      * @param $date
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recherche_date($date)
+    public function rechercheDate($date)
     {
         $formulaire = $this->createRequestForm();
         $requestChart = $this->createRequestedDateChart($date);
@@ -116,14 +117,14 @@ class FormController extends Controller
     }
 
     /**
-     * @Route("/period/{debut}/{fin}", name="period")
+     * @Route("/{_locale}/periode/{debut}/{fin}", name="periode", defaults={"_locale": "fr"})
      *
      * @param $debut
      * @param $fin
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recherche_period($debut, $fin)
+    public function recherchePeriode($debut, $fin)
     {
         $formulaire = $this->createRequestForm();
         $requestChart = $this->createRequestedLineChart($debut, $fin);

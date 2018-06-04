@@ -12,13 +12,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class SiteController extends Controller
 {
     /**
-     * @Route("/{_locale}/site/{idSite}", name="page_recap_site")
+     * @Route("/{_locale}/site/{idSite}", name="recap_site")
      *
      * @param $idSite
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function page_recap_site($idSite)
+    public function recapSiteAction($idSite)
     {
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
 
@@ -28,7 +28,7 @@ class SiteController extends Controller
 
         $evolutionChart = $this->createWeeklyEvolutionBarChart($site);
 
-        return $this->render('site/main_page.html.twig', [
+        return $this->render('site/site.html.twig', [
             'evolutionChart' => $evolutionChart,
             'site' => $site,
         ]);
@@ -59,11 +59,11 @@ class SiteController extends Controller
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function displaySites()
+    public function displaySitesAction()
     {
         $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
 
-        return $this->render('shared/header.html.twig', [
+        return $this->render('header.html.twig', [
             'liste_sites' => $sites,
         ]);
     }

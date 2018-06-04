@@ -10,7 +10,7 @@
         </div>
         {% block form %}
             {% if app.request.get('_route') == 'index' %}
-                {{  render(controller('App\\Controller\\FormController::new')) }}
+                {{  render(controller('App\\Controller\\FormController::newFormAction')) }}
             {% endif %}
         {% endblock %}
 {% endblock %}

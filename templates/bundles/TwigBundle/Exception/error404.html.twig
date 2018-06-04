@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+       <h1 class="text-center">404 - Page Introuvable</h1>
+
+    <p class="text-center alert-danger">
+        A priori, ce lieu n'existe pas ! Mais comme je suis sympa,<br>
+        je vous ais au moins préparé une <a href="{{ path('index') }}">issue de secours</a>.
+    </p>
+{% endblock %}
