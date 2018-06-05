@@ -112,8 +112,13 @@ class FormController extends Controller
             $dataTable[] = [$recapitulatif['nomSite'], $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
         $title = 'Nombre de sessions et temps de connexion du '.$date.' pour chaque site';
+        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
+        $axes =['x' => [
+            'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
+            'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
+        ];
 
-        return ChartBuilder::createBarChart($title, $dataTable);
+        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
     }
 
     /**
@@ -155,7 +160,12 @@ class FormController extends Controller
         }
 
         $title = 'Evolution du nombre de sessions et du temps de connexion du '.$fin.' au '.$debut;
+        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
+        $axes = ['y' => [
+            'heures' => ['label' => 'Nombre d\'heures'],
+            'sessions' => ['label' => 'Nombre de sessions'], ],
+        ];
 
-        return ChartBuilder::createLineChart($title, $dataTable);
+        return ChartBuilder::createLineChart($title, $dataTable, $series, $axes);
     }
 }

@@ -35,7 +35,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
                   WHERE r.codePoste = :poste
                   AND r.date BETWEEN :last_week AND :current_date')
             ->setParameter('poste', $poste)
-            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of Recapitulatif objects
@@ -55,11 +55,11 @@ class RecapitulatifRepository extends ServiceEntityRepository
             FROM App\Entity\Recapitulatif r, App\Entity\Poste p 
             WHERE r.codePoste = p.codePoste 
             AND p.idSite = :site 
-            AND r.date BETWEEN :last_week AND :current_date 
+            AND r.date >= :last_week AND r.date <= :current_date 
             GROUP BY r.date 
             ORDER BY r.date ASC')
             ->setParameter('site', $site)
-            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -80,7 +80,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND r.date BETWEEN :last_week AND :current_date 
             GROUP BY s.idSite
             ORDER BY r.date ASC')
-            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -101,7 +101,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             WHERE r.date BETWEEN :day_backward AND :current_date 
             GROUP BY r.date 
             ORDER BY r.date ASC')
-            ->setParameter('day_backward', new \DateTime('-'.(7 * $weeks - 1).' Day'))
+            ->setParameter('day_backward', new \DateTime('-'.$weeks.' Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -160,7 +160,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             WHERE r.codePoste = :codePoste
             AND r.date BETWEEN :last_week AND :current_date')
             ->setParameter('codePoste', $codePoste)
-            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns the value of MIN(r.dureeOuverture)
@@ -176,7 +176,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             GROUP BY r.codePoste 
             ORDER BY r.date ASC')
             ->setParameter('codePoste', $codePoste)
-            ->setParameter('last_week', new \DateTime('-6 Day'))
+            ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.dureeOuverture)

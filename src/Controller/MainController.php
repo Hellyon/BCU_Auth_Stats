@@ -63,7 +63,13 @@ class MainController extends Controller
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
         $title = 'Evolution du nombre de sessions et du temps de connexion sur 4 semaines';
+        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
+        $axes = ['y' => [
+            'heures' => ['label' => 'Nombre d\'heures'],
+            'sessions' => ['label' => 'Nombre de sessions'],
+            ],
+        ];
 
-        return ChartBuilder::createLineChart($title, $dataTable);
+        return ChartBuilder::createLineChart($title, $dataTable, $series, $axes);
     }
 }
