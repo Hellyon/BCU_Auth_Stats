@@ -22,7 +22,7 @@ class ChartBuilder
      *
      * @return BarChart
      */
-    public static function createBarChart(String $title, array $dataTable, array $series, array $axes)
+    public static function createBarChart($title, $dataTable, $series, $axes)
     {
         $chart = new BarChart();
         $chart->getData()->setArrayToDataTable($dataTable);
@@ -56,7 +56,7 @@ class ChartBuilder
      *
      * @return LineChart
      */
-    public static function createLineChart(String $title, array $dataTable, array $series, array $axes)
+    public static function createLineChart($title, $dataTable, $series, $axes)
     {
         $lineChart = new LineChart();
 
@@ -88,7 +88,7 @@ class ChartBuilder
      *
      * @return PieChart
      */
-    public static function createPieChart(String $title, array $dataTable)
+    public static function createPieChart($title, $dataTable)
     {
         $pieChart = new PieChart();
 
