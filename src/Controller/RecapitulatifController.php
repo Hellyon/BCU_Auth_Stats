@@ -17,7 +17,7 @@ class RecapitulatifController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function index($codePoste)
+    public function recapChartAction($codePoste)
     {
         $poste = $this->getDoctrine()->getRepository(Poste::class)->find($codePoste);
         if (!$poste) {
@@ -98,7 +98,11 @@ class RecapitulatifController extends Controller
             $dataTable[] = [$jour, $recapitulatif->getDureeCumul() / 3600, $recapitulatif->getNbConnexions()];
         }
         $title = 'Temps d\'utilisation et nombre de sessions par jour';
+        $series = [['axis' => 'heures'], ['axis' => 'sessions']];        $axes =['x' => [
+        'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
+        'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
+    ];
 
-        return ChartBuilder::createBarChart($title, $dataTable);
+        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
     }
 }

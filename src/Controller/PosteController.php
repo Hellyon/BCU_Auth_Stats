@@ -20,7 +20,7 @@ class PosteController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function displayPostesSite($site)
+    public function displayPostesSiteAction($site)
     {
         $postes = $this->getDoctrine()->getRepository(Poste::class)->findByIdSite($site);
 

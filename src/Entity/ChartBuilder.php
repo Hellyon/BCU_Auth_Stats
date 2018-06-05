@@ -17,10 +17,12 @@ class ChartBuilder
     /**
      * @param $title
      * @param $dataTable
+     * @param $series
+     * @param $axes
      *
      * @return BarChart
      */
-    public static function createBarChart($title, $dataTable)
+    public static function createBarChart($title, $dataTable, $series, $axes)
     {
         $chart = new BarChart();
         $chart->getData()->setArrayToDataTable($dataTable);
@@ -33,11 +35,8 @@ class ChartBuilder
             ->setHeight(450)
             ->setWidth('45%')
             ->setOrientation('horizontal')
-            ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
-            ->setAxes(['x' => [
-                'connexions' => ['side' => 'top', 'label' => 'Nombre de connexions'], ],
-                'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
-            ]);
+            ->setSeries($series)
+            ->setAxes($axes);
 
         $chart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -52,10 +51,12 @@ class ChartBuilder
     /**
      * @param $title
      * @param $dataTable
+     * @param $series
+     * @param $axes
      *
      * @return LineChart
      */
-    public static function createLineChart($title, $dataTable)
+    public static function createLineChart($title, $dataTable, $series, $axes)
     {
         $lineChart = new LineChart();
 
@@ -75,8 +76,8 @@ class ChartBuilder
             ->setBackgroundColor('#EAEAEA')
             ->setHeight(450)
             ->setWidth('45%')
-            ->setSeries([['axis' => 'heures'], ['axis' => 'connexions']])
-            ->setAxes(['y' => ['heures' => ['label' => 'Nombre d\'heures'], 'connexions' => ['label' => 'Nombre de connexions']]]);
+            ->setSeries($series)
+            ->setAxes($axes);
 
         return $lineChart;
     }

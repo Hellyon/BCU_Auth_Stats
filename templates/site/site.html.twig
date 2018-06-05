@@ -1,0 +1,16 @@
+{# site.html.twig #}
+{%  extends 'base.html.twig' %}
+{% block body %}
+    {{ parent() }}
+    <p class="text-center h1">{{ site.nomSite }}</p>
+    <div class="container-fluid">
+        <div id="div_evolutionChart" class="col-lg-6"></div>
+        <div id="div_rushHoursChart" class="col-lg-6"></div>
+        <script type="text/javascript">
+            {{ gc_draw([evolutionChart, rushHoursChart], ['div_evolutionChart', 'div_rushHoursChart']) }}
+        </script>
+        {% block liste_poste %}
+            {{  render(controller('App\\Controller\\PosteController::displayPostesSiteAction', {'site': site})) }}
+        {% endblock %}
+    </div>
+{% endblock %}

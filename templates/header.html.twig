@@ -1,8 +1,3 @@
-{%  block style %}
-<style>
-</style>
-{%  endblock %}
-
 {%  block barre_sites %}
     <nav class="navbar">
         <div class="container-fluid">
@@ -18,7 +13,7 @@
                 <ul class="nav navbar-nav">
                 {%  for site in liste_sites %}
                     <li class="active">
-                        <a href="{{ path('page_recap_site', { 'idSite': site.idSite }) }}">
+                        <a href="{{ path('recap_site', { 'idSite': site.idSite }) }}">
                             {{ site.nomSite }}
                         </a>
                     </li>
