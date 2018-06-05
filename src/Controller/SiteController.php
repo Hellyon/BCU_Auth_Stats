@@ -19,7 +19,7 @@ class SiteController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recapSiteAction(int $idSite)
+    public function recapSiteAction($idSite)
     {
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
 
