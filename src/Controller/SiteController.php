@@ -19,7 +19,7 @@ class SiteController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recapSiteAction($idSite)
+    public function recapSiteAction(int $idSite)
     {
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
 
@@ -42,7 +42,7 @@ class SiteController extends Controller
      *
      * @return BarChart
      */
-    private function createWeeklyEvolutionBarChart($site)
+    private function createWeeklyEvolutionBarChart(Site $site)
     {
         $recapitulatifs = $this->getDoctrine()
             ->getRepository(Recapitulatif::class)
@@ -66,7 +66,7 @@ class SiteController extends Controller
         return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
     }
 
-    private function createWeeklyRushHourBarChart($site){
+    private function createWeeklyRushHourBarChart(Site $site){
         $data = $this->getDoctrine()
             ->getRepository(Session::class)
             ->rushHours($site);

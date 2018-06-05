@@ -85,7 +85,7 @@ class FormController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function rechercheDate($date)
+    public function rechercheDate(Int $date)
     {
         $formulaire = $this->createRequestForm();
         $requestChart = $this->createRequestedDateChart($date);
@@ -96,7 +96,7 @@ class FormController extends Controller
         ]);
     }
 
-    private function createRequestedDateChart($date)
+    private function createRequestedDateChart(Int $date)
     {
         $dateD = strftime('%Y-%m-%d', $date);
 
@@ -129,7 +129,7 @@ class FormController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recherchePeriode($debut, $fin)
+    public function recherchePeriode(Int $debut, Int $fin)
     {
         $formulaire = $this->createRequestForm();
         $requestChart = $this->createRequestedLineChart($debut, $fin);
@@ -140,7 +140,7 @@ class FormController extends Controller
         ]);
     }
 
-    private function createRequestedLineChart($debut, $fin)
+    private function createRequestedLineChart(Int $debut, Int $fin)
     {
         $debutD = strftime('%Y-%m-%d', $debut);
         $finD = strftime('%Y-%m-%d', $fin);

@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\Poste;
+use App\Entity\Site;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class PosteController extends Controller
@@ -20,7 +21,7 @@ class PosteController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function displayPostesSiteAction($site)
+    public function displayPostesSiteAction(Site $site)
     {
         $postes = $this->getDoctrine()->getRepository(Poste::class)->findByIdSite($site);
 

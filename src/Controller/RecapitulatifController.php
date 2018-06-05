@@ -63,7 +63,7 @@ class RecapitulatifController extends Controller
      *
      * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart
      */
-    private function createWeeklyPieChart($poste)
+    private function createWeeklyPieChart(Poste $poste)
     {
         $recapitulatifs = $this->getDoctrine()
             ->getRepository(Recapitulatif::class)
@@ -85,7 +85,7 @@ class RecapitulatifController extends Controller
      *
      * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart
      */
-    private function createWeeklyBarChart($poste)
+    private function createWeeklyBarChart(Poste $poste)
     {
         $recapitulatifs = $this->getDoctrine()
             ->getRepository(Recapitulatif::class)
