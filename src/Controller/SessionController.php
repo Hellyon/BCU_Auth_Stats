@@ -15,12 +15,12 @@ class SessionController extends Controller
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function findByID($id)
+    public function findByID($idSession)
     {
-        $session = $this->getDoctrine()->getRepository(Session::class)->find($id);
+        $session = $this->getDoctrine()->getRepository(Session::class)->find($idSession);
 
         if (!$session) {
-            throw $this->createNotFoundException('Pas de Session trouvée pour l\'id'.$id);
+            throw $this->createNotFoundException('Pas de Session trouvée pour l\'id'.$idSession);
         }
 
         return $this->render('session/session.html.twig', [

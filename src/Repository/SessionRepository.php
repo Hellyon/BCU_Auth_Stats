@@ -10,6 +10,7 @@ namespace App\Repository;
 
 
 use App\Entity\Session;
+use App\Entity\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -20,7 +21,7 @@ class SessionRepository extends ServiceEntityRepository
         parent::__construct($registry, Session::class);
     }
 
-    public function rushHours($site){
+    public function rushHours(Site $site){
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery("SELECT SUM(CASE WHEN s.heureDebut BETWEEN '08:00:00' AND '10:00:00' THEN 1 ELSE 0 END) AS H8,
             SUM(CASE WHEN s.heureDebut BETWEEN '10:00:00' AND '12:00:00' THEN 1 ELSE 0 END) AS H10,

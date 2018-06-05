@@ -12,6 +12,7 @@ use App\Entity\Poste;
 use App\Entity\Recapitulatif;
 use App\Entity\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class RecapitulatifRepository extends ServiceEntityRepository
@@ -26,7 +27,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return Recapitulatif[]
      */
-    public function findByCodePosteAndAWeekBackward(?Poste $poste): array
+    public function findByCodePosteAndAWeekBackward(Poste $poste): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -47,7 +48,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return Recapitulatif[]
      */
-    public function findBySiteAndAWeekBackward(?Site $site): array
+    public function findBySiteAndAWeekBackward(Site $site): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -92,7 +93,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findXWeeksBackward($weeks)
+    public function findXWeeksBackward(Int $weeks)
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -114,7 +115,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByPeriod($debut, $fin)
+    public function findByPeriod(String $debut, String $fin)
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -135,7 +136,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByDate($date)
+    public function findByDate(String $date)
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -152,7 +153,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function minDureeOuverturePoste($codePoste){
+    public function minDureeOuverturePoste(String $codePoste){
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT MIN(r.dureeOuverture)
@@ -166,7 +167,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
         // returns the value of MIN(r.dureeOuverture)
         return $query->getOneOrNullResult();
     }
-    public function calculateUseRate($codePoste){
+    public function calculateUseRate(String $codePoste){
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT SUM(r.dureeCumul)/ SUM(r.dureeOuverture)*100 AS useRate
