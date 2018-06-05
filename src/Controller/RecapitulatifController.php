@@ -23,17 +23,17 @@ class RecapitulatifController extends Controller
         if (!$poste) {
             throw $this->createNotFoundException('Pas de poste trouvé pour le code'.$codePoste);
         }
-    $useRateMessage = '';
+        $useRateMessage = '';
         $check = $this->getDoctrine()->getRepository(Recapitulatif::class)->minDureeOuverturePoste($codePoste);
-        if(!empty($check[1])) {
-            if ($check[1] == 1) {
+        if (!empty($check[1])) {
+            if (1 == $check[1]) {
                 $useRateMessage = 'Horaires d\'ouverture dépassées, veuillez les mettre à jour via le script afin de profiter de la fonctionnalité';
             } else {
                 $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)->calculateUseRate($codePoste);
-                $useRateMessage = 'Le Poste a été utilisé à ' . $useRate['useRate'] . '% au cours de la dernière semaine';
+                $useRateMessage = 'Le Poste a été utilisé à '.$useRate['useRate'].'% au cours de la dernière semaine';
             }
         }
-        if(!$useRateMessage){
+        if (!$useRateMessage) {
             $noDataFound = 'Pas de données pour ce poste';
 
             return $this->render('recap/recap_poste.html.twig', [
@@ -98,7 +98,8 @@ class RecapitulatifController extends Controller
             $dataTable[] = [$jour, $recapitulatif->getDureeCumul() / 3600, $recapitulatif->getNbConnexions()];
         }
         $title = 'Temps d\'utilisation et nombre de sessions par jour';
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];        $axes =['x' => [
+        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
+        $axes = ['x' => [
         'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
         'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
     ];

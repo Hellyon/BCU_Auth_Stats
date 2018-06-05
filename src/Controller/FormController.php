@@ -113,7 +113,7 @@ class FormController extends Controller
         }
         $title = 'Nombre de sessions et temps de connexion du '.$date.' pour chaque site';
         $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes =['x' => [
+        $axes = ['x' => [
             'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
             'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
         ];

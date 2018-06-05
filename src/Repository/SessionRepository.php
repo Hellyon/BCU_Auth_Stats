@@ -3,11 +3,10 @@
  * Created by PhpStorm.
  * User: ilbenjel
  * Date: 05/06/18
- * Time: 10:52
+ * Time: 10:52.
  */
 
 namespace App\Repository;
-
 
 use App\Entity\Session;
 use App\Entity\Site;
@@ -21,7 +20,8 @@ class SessionRepository extends ServiceEntityRepository
         parent::__construct($registry, Session::class);
     }
 
-    public function rushHours(Site $site){
+    public function rushHours(Site $site)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery("SELECT SUM(CASE WHEN s.heureDebut BETWEEN '08:00:00' AND '10:00:00' THEN 1 ELSE 0 END) AS H8,
             SUM(CASE WHEN s.heureDebut BETWEEN '10:00:00' AND '12:00:00' THEN 1 ELSE 0 END) AS H10,

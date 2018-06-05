@@ -12,7 +12,6 @@ use App\Entity\Poste;
 use App\Entity\Recapitulatif;
 use App\Entity\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use phpDocumentor\Reflection\Types\Integer;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class RecapitulatifRepository extends ServiceEntityRepository
@@ -153,7 +152,8 @@ class RecapitulatifRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
-    public function minDureeOuverturePoste($codePoste){
+    public function minDureeOuverturePoste($codePoste)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT MIN(r.dureeOuverture)
@@ -167,7 +167,9 @@ class RecapitulatifRepository extends ServiceEntityRepository
         // returns the value of MIN(r.dureeOuverture)
         return $query->getOneOrNullResult();
     }
-    public function calculateUseRate($codePoste){
+
+    public function calculateUseRate($codePoste)
+    {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
             'SELECT SUM(r.dureeCumul)/ SUM(r.dureeOuverture)*100 AS useRate
