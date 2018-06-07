@@ -15,11 +15,11 @@ class SiteController extends Controller
     /**
      * @Route("/{_locale}/site/{idSite}", name="recap_site")
      *
-     * @param $idSite
+     * @param int $idSite
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recapSiteAction($idSite)
+    public function recapSiteAction(int $idSite)
     {
         $site = $this->getDoctrine()->getRepository(Site::class)->find($idSite);
 
@@ -38,7 +38,7 @@ class SiteController extends Controller
     }
 
     /**
-     * @param $site
+     * @param Site $site
      *
      * @return BarChart
      */
@@ -56,16 +56,15 @@ class SiteController extends Controller
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
         $title = 'Temps d\'utilisation et nombre de sessions sur une semaine';
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes = ['x' => [
-        'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'],
-        'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
-        ],
-    ];
 
-        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
+        return ChartBuilder::buildBarChart($title, $dataTable);
     }
 
+    /**
+     * @param Site $site
+     *
+     * @return BarChart
+     */
     private function createWeeklyRushHourBarChart(Site $site)
     {
         $data = $this->getDoctrine()
@@ -77,12 +76,8 @@ class SiteController extends Controller
         $dataTable[] = ['période', $data['H8'] / 1, $data['H10'] / 1, $data['H12'] / 1, $data['H14'] / 1, $data['H16'] / 1, $data['H18'] / 1, $data['H20'] / 1, $data['H22'] / 1];
 
         $title = 'Répartition des heures d\'affluence sur la semaine';
-        $series = ['axis' => 'période'];
-        $axes = ['x' => [
-            'période' => ['side' => 'top', 'label' => 'Nombre de sessions'],
-        ]];
 
-        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
+        return ChartBuilder::buildBarChart($title, $dataTable);
     }
 
     /**

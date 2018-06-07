@@ -15,14 +15,14 @@ use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
 class ChartBuilder
 {
     /**
+     * Builds a Bar Chart.
+     *
      * @param $title
      * @param $dataTable
-     * @param $series
-     * @param $axes
      *
      * @return BarChart
      */
-    public static function createBarChart($title, $dataTable, $series, $axes)
+    public static function buildBarChart($title, $dataTable)
     {
         $chart = new BarChart();
         $chart->getData()->setArrayToDataTable($dataTable);
@@ -34,9 +34,7 @@ class ChartBuilder
             ->setBackgroundColor('#EAEAEA')
             ->setHeight(450)
             ->setWidth('45%')
-            ->setOrientation('horizontal')
-            ->setSeries($series)
-            ->setAxes($axes);
+            ->setOrientation('horizontal');
 
         $chart->getOptions()->getTitleTextStyle()
             ->setBold(true)
@@ -49,14 +47,14 @@ class ChartBuilder
     }
 
     /**
+     * Builds a LineChart.
+     *
      * @param $title
      * @param $dataTable
-     * @param $series
-     * @param $axes
      *
      * @return LineChart
      */
-    public static function createLineChart($title, $dataTable, $series, $axes)
+    public static function buildLineChart($title, $dataTable)
     {
         $lineChart = new LineChart();
 
@@ -75,20 +73,20 @@ class ChartBuilder
         $lineChart->getOptions()
             ->setBackgroundColor('#EAEAEA')
             ->setHeight(450)
-            ->setWidth('45%')
-            ->setSeries($series)
-            ->setAxes($axes);
+            ->setWidth('45%');
 
         return $lineChart;
     }
 
     /**
+     * Builds a Pie CHart.
+     *
      * @param $title
      * @param $dataTable
      *
      * @return PieChart
      */
-    public static function createPieChart($title, $dataTable)
+    public static function buildPieChart($title, $dataTable)
     {
         $pieChart = new PieChart();
 

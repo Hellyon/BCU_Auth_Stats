@@ -15,11 +15,24 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class SessionRepository extends ServiceEntityRepository
 {
+    /**
+     * SessionRepository constructor.
+     *
+     * @param RegistryInterface $registry
+     */
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Session::class);
     }
 
+    /**
+     * @param Site $site
+     *
+     * @return mixed
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function rushHours(Site $site)
     {
         $entityManager = $this->getEntityManager();

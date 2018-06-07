@@ -11,11 +11,11 @@ class SessionController extends Controller
     /**
      * @Route("/{_locale}/session/findByID/{id}", name="find_session_by_id")
      *
-     * @param $id
+     * @param int $idSession
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function findByID($idSession)
+    public function findByID(int $idSession)
     {
         $session = $this->getDoctrine()->getRepository(Session::class)->find($idSession);
 

@@ -34,6 +34,18 @@ class Site
     private $nomSite = 'NULL';
 
     /**
+     * codeSite Setter.
+     *
+     * @param string $codeSite
+     */
+    public function setCodeSite(string $codeSite): void
+    {
+        $this->codeSite = $codeSite;
+    }
+
+    /**
+     * idSite Getter.
+     *
      * @return int
      */
     public function getIdSite(): int
@@ -42,10 +54,32 @@ class Site
     }
 
     /**
-     * @return null|string
+     * idSite Setter.
+     *
+     * @param int $idSite
      */
-    public function getNomSite(): ?string
+    public function setIdSite(int $idSite): void
+    {
+        $this->idSite = $idSite;
+    }
+
+    /**
+     * nomSite Getter.
+     *
+     * @return string
+     */
+    public function getNomSite(): string
     {
         return $this->nomSite;
+    }
+
+    /**
+     * nomSite Setter.
+     *
+     * @param string $nomSite
+     */
+    public function setNomSite(string $nomSite): void
+    {
+        $this->nomSite = $nomSite;
     }
 }

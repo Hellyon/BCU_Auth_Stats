@@ -6,45 +6,97 @@
     {%  if form is defined %}
         {%  block form_row %}
             {% form_theme form with 'form/bootstrap_4_layout_no_label_error.html.twig' %}
-                <div class="col-md-5 col-md-offset-1">
-                    <label class="h1">Recherche</label><br>
-                    <label class="form-text text-muted">Remplir les deux champs pour une période ou seulement Debut pour une date précise</label>
-                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-                    <div class="form-group">
+            <div class="col-md-5 col-md-offset-1">
+                <label class="h1">Recherche</label><br>
+                <label class="form-text text-muted">Remplir les deux champs pour une période ou seulement Debut pour une date précise</label>
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}, 'action': path('recherche_globale')}) }}
+                <div class="form-group">
                     {# Date Debut #}
-                        {{ form_label(form.debut) }}
-                        {{ form_widget(form.debut) }}
-                        {{ form_errors(form.debut) }}
-                    </div>
-                    <div class="form-group">
-                    {# Date Fin #}
-                        {{ form_label(form.fin) }}
-                        {{ form_widget(form.fin) }}
-                        {{ form_errors(form.fin) }}
-                    </div>
-                    {% if form.vars.errors|length >= 1 %}
-                        <div class="form-group alert">
-                            {# Errors #}
-                            {{ form_errors(form) }}
-                        </div>
-                    {% endif %}
-                    <div class="form-group">
-                        {# Rechercher ! #}
-                        {{ form_widget(form.rechercher) }}
-                        {{ form_end(form) }}
-                    </div>
+                    {{ form_label(form.debut) }}
+                    {{ form_widget(form.debut) }}
+                    {{ form_errors(form.debut) }}
                 </div>
+                <div class="form-group">
+                    {# Date Fin #}
+                    {{ form_label(form.fin) }}
+                    {{ form_widget(form.fin) }}
+                    {{ form_errors(form.fin) }}
+                </div>
+                <div class="form-group">
+                    {# Type #}
+                    {{ form_label(form.type) }}
+                    <label class="radio-inline">
+                        {{ form_widget(form.type) }}
+                    </label>
+                    {{ form_errors(form.type) }}
+                </div>
+                <div class="form-group">
+                    {# Site #}
+                    {{ form_label(form.site) }}
+                    {{ form_widget(form.site) }}
+                    {{ form_errors(form.site) }}
+                </div>
+                <div class="form-group">
+                    {# Poste #}
+                    {{ form_label(form.poste) }}
+                    {{ form_widget(form.poste) }}
+                    {{ form_errors(form.poste) }}
+                </div>
+                {% if form.vars.errors|length >= 1 %}
+                    <div class="form-group alert">
+                        {# Errors #}
+                        {{ form_errors(form) }}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    {# Rechercher ! #}
+                    {{ form_widget(form.rechercher) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        {% endblock %}
+        {% block formAJAX %}
+            <script>
+                let $site = $('#recherche_site');
+                // When sites gets selected ...
+                $site.change(function() {
+                    // ... retrieve the corresponding form.
+                    let $form = $(this).closest('form');
+                    // Simulate form data, but only include the selected site value.
+                    let data = {};
+                    data['site'] = $site.val();
+                    // Submit data via AJAX to the form's action path.
+                    $.ajax({
+                        url : $form.attr('action'),
+                        type: $form.attr('method'),
+                        data : data,
+                        success: function(html) {
+                            // Replace current position field ...
+                            $('#recherche_poste').replaceWith(
+                                // ... with the returned one from the AJAX response.
+                                $(html).find('#recherche_poste')
+                            );
+                            // Position field now displays the appropriate postes.
+                        }
+                    });
+                });
+            </script>
         {% endblock %}
     {% endif %}
-{% endblock %}
+        {% endblock %}
 
-{% block requestChart %}
-    {% if requestChart is defined %}
+        {% block requestChart %}
+        {% if requestChart is defined %}
+            {% if noDataFound is not defined %}
             <div id="div_requestChart" class="col-md-6 col-lg-offset-0"></div>
 
             <script type="text/javascript">
                 {{ gc_draw(requestChart, 'div_requestChart') }}
             </script>
-    {%  endif %}
+            {% else %}
+                <br/>
+            <p class="col-md-5 col-lg-offset-0 alert-danger text-center">{{ noDataFound }}</p>
+            {%  endif %}
+        {% endif %}
     </div>
 {% endblock %}
