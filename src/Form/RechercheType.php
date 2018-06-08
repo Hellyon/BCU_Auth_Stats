@@ -11,6 +11,7 @@ namespace App\Form;
 use App\Entity\Poste;
 use App\Entity\Recherche;
 use App\Entity\Site;
+use App\Repository\PosteRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -22,23 +23,11 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class RechercheType extends AbstractType
 {
-    private $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-    {
-        $this->tokenStorage = $tokenStorage;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choicePostes = [];
-        foreach ($options['postes'] as $poste) {
-            $choicePostes[] = $poste;
-        }
         $choiceSites = [];
         foreach ($options['sites'] as $site) {
             $choiceSites[] = $site;
@@ -77,6 +66,7 @@ class RechercheType extends AbstractType
                 },
                 'placeholder' => 'Choisir un Site',
                 ]
+
             )
             ->add('rechercher', SubmitType::class);
 
@@ -89,7 +79,7 @@ class RechercheType extends AbstractType
                 'choice_attr' => function (?Poste $poste) {
                     return ['class' => 'poste_'.strtolower($poste->getCodePoste())];
                 },
-                'query_builder' => function (EntityRepository $entityRepository) use ($site) {
+                'query_builder' => function (PosteRepository $entityRepository) use ($site) {
                     if ($site) {
                         return $entityRepository->findBySite($site);
                     } else {
@@ -106,10 +96,11 @@ class RechercheType extends AbstractType
                 $formModifier($event->getForm(), $event->getData()->getSite());
             });
 
-        $builder->get('site')->addEventListener(FormEvents::SUBMIT,
+        $builder->get('site')->addEventListener(FormEvents::POST_SUBMIT,
             function (FormEvent $event) use ($formModifier) {
                 $site = $event->getForm()->getData();
 
+                dump($site);
                 $formModifier($event->getForm()->getParent(), $site);
             });
     }
@@ -119,8 +110,6 @@ class RechercheType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Recherche::class,
             'sites' => null,
-            'postes' => null,
-            'checkSite' => false,
         ]);
     }
 }

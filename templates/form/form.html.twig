@@ -12,14 +12,12 @@
                 {{ form_start(form, {'attr': {'novalidate': 'novalidate'}, 'action': path('recherche_globale')}) }}
                 <div class="form-group">
                     {# Date Debut #}
-                    {{ form_label(form.debut) }}
-                    {{ form_widget(form.debut) }}
+                    {{ form_row(form.debut) }}
                     {{ form_errors(form.debut) }}
                 </div>
                 <div class="form-group">
                     {# Date Fin #}
-                    {{ form_label(form.fin) }}
-                    {{ form_widget(form.fin) }}
+                    {{ form_row(form.fin) }}
                     {{ form_errors(form.fin) }}
                 </div>
                 <div class="form-group">
@@ -32,9 +30,7 @@
                 </div>
                 <div class="form-group">
                     {# Site #}
-                    {{ form_label(form.site) }}
-                    {{ form_widget(form.site) }}
-                    {{ form_errors(form.site) }}
+                    {{ form_row(form.site) }}
                 </div>
                 <div class="form-group">
                     {# Poste #}
@@ -76,7 +72,7 @@
                                 // ... with the returned one from the AJAX response.
                                 $(html).find('#recherche_poste')
                             );
-                            // Position field now displays the appropriate postes.
+                            // Poste field now displays the appropriate postes.
                         }
                     });
                 });

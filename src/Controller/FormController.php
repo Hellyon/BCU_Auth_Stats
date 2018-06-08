@@ -141,6 +141,23 @@ class FormController extends Controller
     }
 
     /**
+     * @return \Symfony\Component\Form\FormInterface
+     */
+    private function createRequestForm()
+    {
+        $sites = $this->getDoctrine()->getRepository(Site::class)->findBy([],['nomSite' => 'ASC']);
+
+        $recherche = new Recherche();
+        $recherche->setFin(new \DateTime());
+        $recherche->setDebut(new \DateTime('-7 Day'));
+        $recherche->setType('Recherche Globale');
+
+        return $this->createForm(RechercheType::class, $recherche, [
+            'sites' => $sites,
+        ]);
+    }
+
+    /**
      * @param int    $debut
      * @param int    $fin
      * @param int    $site
@@ -264,24 +281,5 @@ class FormController extends Controller
         }
 
         return ChartBuilder::buildBarChart($title, $dataTable);
-    }
-
-    /**
-     * @return \Symfony\Component\Form\FormInterface
-     */
-    private function createRequestForm()
-    {
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findAll();
-        $postes = $this->getDoctrine()->getRepository(Poste::class)->findAll();
-
-        $recherche = new Recherche();
-        $recherche->setFin(new \DateTime());
-        $recherche->setDebut(new \DateTime('-7 Day'));
-        $recherche->setType('Recherche Gloabale');
-
-        return $this->createForm(RechercheType::class, $recherche, [
-            'postes' => $postes,
-            'sites' => $sites,
-        ]);
     }
 }

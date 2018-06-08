@@ -84,7 +84,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND p.idSite = s.idSite 
             AND r.date BETWEEN :last_week AND :current_date 
             GROUP BY s.idSite
-            ORDER BY r.date ASC')
+            ORDER BY r.date ASC, s.nomSite ASC')
             ->setParameter('last_week', new \DateTime('-1 Week'))
             ->setParameter('current_date', new \DateTime());
 
@@ -179,7 +179,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND p.idSite = s.idSite
             AND s.idSite = :site
             GROUP BY r.date 
-            ORDER BY r.date ASC')
+            ORDER BY r.date ASC, s.nomSite ASC')
             ->setParameter('debut', new \DateTime($fin))
             ->setParameter('fin', new \DateTime($debut))
             ->setParameter('site', $site);
@@ -203,7 +203,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND p.codePoste = r.codePoste
             AND p.idSite = s.idSite
             GROUP BY s.idSite 
-            ORDER BY SUM(r.dureeCumul) ASC')
+            ORDER BY SUM(r.dureeCumul) ASC, s.nomSite ASC')
             ->setParameter('dateD', new \DateTime($date));
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), s.nomSite
@@ -251,7 +251,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND p.idSite = s.idSite
             AND s.idSite = :site
             GROUP BY s.idSite 
-            ORDER BY SUM(r.dureeCumul) ASC')
+            ORDER BY SUM(r.dureeCumul) ASC, s.nomSite ASC')
             ->setParameter('dateD', new \DateTime($date))
             ->setParameter('site', $site);
 

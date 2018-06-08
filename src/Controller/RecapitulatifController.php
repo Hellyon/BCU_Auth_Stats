@@ -30,7 +30,7 @@ class RecapitulatifController extends Controller
                 $useRateMessage = 'Horaires d\'ouverture dépassées, veuillez les mettre à jour via le script afin de profiter de la fonctionnalité';
             } else {
                 $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)->calculateUseRate($poste);
-                $useRateMessage = 'Le Poste a été utilisé à '.$useRate['useRate'].'% au cours de la dernière semaine';
+                $useRateMessage = 'Le Poste a été utilisé à '.$useRate['useRate'].'% du temps disponible au cours de la dernière semaine';
             }
         }
         if (!$useRateMessage) {
