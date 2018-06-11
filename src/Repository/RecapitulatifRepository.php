@@ -97,7 +97,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findXWeeksBackward(int $weeks)
+    public function findXWeeksBackward(int $weeks): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -119,7 +119,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByPeriode(string $debut, string $fin)
+    public function findByPeriode(string $debut, string $fin): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -128,8 +128,8 @@ class RecapitulatifRepository extends ServiceEntityRepository
             WHERE r.date BETWEEN :debut AND :fin 
             GROUP BY r.date 
             ORDER BY r.date ASC')
-            ->setParameter('debut', new \DateTime($fin))
-            ->setParameter('fin', new \DateTime($debut));
+            ->setParameter('debut', new \DateTime($debut))
+            ->setParameter('fin', new \DateTime($fin));
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
         return $query->execute();
@@ -142,7 +142,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByPeriodeAndPoste(string $debut, string $fin, Poste $poste)
+    public function findByPeriodeAndPoste(string $debut, string $fin, Poste $poste): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -153,8 +153,8 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND r.date BETWEEN :debut AND :fin 
             GROUP BY r.date 
             ORDER BY r.date ASC')
-            ->setParameter('debut', new \DateTime($fin))
-            ->setParameter('fin', new \DateTime($debut))
+            ->setParameter('debut', new \DateTime($debut))
+            ->setParameter('fin', new \DateTime($fin))
             ->setParameter('poste', $poste);
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -168,7 +168,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByPeriodeAndSite(string $debut, string  $fin, Site $site)
+    public function findByPeriodeAndSite(string $debut, string  $fin, Site $site): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -180,8 +180,8 @@ class RecapitulatifRepository extends ServiceEntityRepository
             AND s.idSite = :site
             GROUP BY r.date 
             ORDER BY r.date ASC, s.nomSite ASC')
-            ->setParameter('debut', new \DateTime($fin))
-            ->setParameter('fin', new \DateTime($debut))
+            ->setParameter('debut', new \DateTime($debut))
+            ->setParameter('fin', new \DateTime($fin))
             ->setParameter('site', $site);
 
         // returns an array of SUM(r.dureeCumul), SUM(r.nbConnexions), r.date
@@ -191,9 +191,9 @@ class RecapitulatifRepository extends ServiceEntityRepository
     /**
      * @param string $date
      *
-     * @return mixed
+     * @return array
      */
-    public function findByDate(string $date)
+    public function findByDate(string $date): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -216,7 +216,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByDateAndPoste(string $date, Poste $poste)
+    public function findByDateAndPoste(string $date, Poste $poste): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -240,7 +240,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      */
-    public function findByDateAndSite(string $date, Site $site)
+    public function findByDateAndSite(string $date, Site $site): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -266,7 +266,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function minDureeOuverturePoste(Poste $poste)
+    public function minDureeOuverturePoste(Poste $poste): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -290,7 +290,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function calculateUseRate(Poste $poste)
+    public function calculateUseRate(Poste $poste): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(

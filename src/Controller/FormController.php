@@ -9,7 +9,9 @@ use App\Entity\Recherche;
 use App\Entity\Site;
 use App\Form\RechercheType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FormController extends Controller
@@ -23,7 +25,7 @@ class FormController extends Controller
      */
     public function newFormAction(Request $request)
     {
-        $formulaire = $this->createRequestForm();
+        $formulaire = $this->createRequestForm(null);
         $formulaire->handleRequest($request);
         $fail = false;
 
@@ -38,8 +40,9 @@ class FormController extends Controller
                         ]));
                     } else {
                         return $this->redirect($this->generateUrl('periode', [
-                            'fin' => $recherche->getDebut()->getTimeStamp(),
-                            'debut' => $recherche->getFin()->getTimeStamp(), ]));
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
+                        ]));
                     }
                     break;
                 case 'site':
@@ -50,8 +53,8 @@ class FormController extends Controller
                         ]));
                     } else {
                         return $this->redirect($this->generateUrl('periode', [
-                            'fin' => $recherche->getDebut()->getTimeStamp(),
-                            'debut' => $recherche->getFin()->getTimeStamp(),
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
                             'site' => $recherche->getSite()->getIdSite(),
                         ]));
                     }
@@ -64,8 +67,8 @@ class FormController extends Controller
                         ]));
                     } else {
                         return $this->redirect($this->generateUrl('periode', [
-                            'fin' => $recherche->getDebut()->getTimeStamp(),
-                            'debut' => $recherche->getFin()->getTimeStamp(),
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
                             'poste' => $recherche->getPoste()->getCodePoste(),
                         ]));
                     }
@@ -94,7 +97,17 @@ class FormController extends Controller
      */
     public function rechercheDate(int $date, ?int $site, ?string $poste)
     {
-        $formulaire = $this->createRequestForm();
+        $recherche = new Recherche();
+        $jour = new \DateTime();
+        $jour->setTimestamp($date);
+        $recherche->setDebut($jour);
+        if ($site) {
+            $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
+        }
+        if ('NOPOSTE' != $poste) {
+            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+        }
+        $formulaire = $this->createRequestForm($recherche);
         $requestChart = $this->createRequestedDateChart($date, $site, $poste);
 
         if ($requestChart) {
@@ -123,8 +136,23 @@ class FormController extends Controller
      */
     public function recherchePeriode(int $debut, int $fin, ?int $site, ?string $poste)
     {
-        $formulaire = $this->createRequestForm();
-        $requestChart = $this->createRequestedLineChart($debut, $fin, $site, $poste);
+        $recherche = new Recherche();
+
+        $jour = new \DateTime();
+        $jour->setTimestamp($debut);
+        $recherche->setDebut($jour);
+
+        $jour = new \DateTime();
+        $jour->setTimestamp($fin);
+        $recherche->setFin($jour);
+        if ($site) {
+            $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
+        }
+        if ('NOPOSTE' != $poste) {
+            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+        }
+        $formulaire = $this->createRequestForm($recherche);
+        $requestChart = $this->createRequestedPeriodeChart($debut, $fin, $site, $poste);
 
         if ($requestChart) {
             return $this->render('form/form.html.twig', [
@@ -141,20 +169,44 @@ class FormController extends Controller
     }
 
     /**
+     * @Route("/{_locale}/siteAjax", name="site_ajax_call")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function ajaxAction(Request $request)
+    {
+        if (!$request->isXmlHttpRequest()) {
+            throw new NotFoundHttpException();
+        }
+
+        $id = $request->query->get('site_id');
+        $postesResponse = [];
+        $postes = $this->getDoctrine()->getRepository(Poste::class)->findBySite($id)->getQuery()->getResult();
+
+        $postesResponse['Choisir un Poste'] = '';
+        foreach ($postes as $poste) {
+            $postesResponse[$poste->getCodePoste()] = $poste->getCodePoste();
+        }
+
+        return new JsonResponse($postesResponse);
+    }
+
+    /**
      * @return \Symfony\Component\Form\FormInterface
      */
-    private function createRequestForm()
+    private function createRequestForm(?Recherche $recherche)
     {
-        $sites = $this->getDoctrine()->getRepository(Site::class)->findBy([],['nomSite' => 'ASC']);
+        if (!$recherche) {
+            $recherche = new Recherche();
+            $recherche->setFin(new \DateTime());
+            $recherche->setDebut(new \DateTime('-7 Day'));
+        }
 
-        $recherche = new Recherche();
-        $recherche->setFin(new \DateTime());
-        $recherche->setDebut(new \DateTime('-7 Day'));
         $recherche->setType('Recherche Globale');
 
-        return $this->createForm(RechercheType::class, $recherche, [
-            'sites' => $sites,
-        ]);
+        return $this->createForm(RechercheType::class, $recherche);
     }
 
     /**
@@ -165,7 +217,7 @@ class FormController extends Controller
      *
      * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart
      */
-    private function createRequestedLineChart(int $debut, int $fin, ?int $site, ?string $poste)
+    private function createRequestedPeriodeChart(int $debut, int $fin, ?int $site, ?string $poste)
     {
         // Recuperation de la date au format YYYY-MM-DD
         $debutD = strftime('%Y-%m-%d', $debut);
@@ -201,7 +253,7 @@ class FormController extends Controller
             $title = 'Evolution globale de l\'utilisation des postes du '.$fin.' au '.$debut;
         }
 
-        if (!$recapitulatifs) {
+        if (count($recapitulatifs) <= 1) {
             return null;
         }
 

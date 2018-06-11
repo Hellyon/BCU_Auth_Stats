@@ -22,11 +22,6 @@
                 </div>
                 <div class="form-group">
                     {# Type #}
-                    {{ form_label(form.type) }}
-                    <label class="radio-inline">
-                        {{ form_widget(form.type) }}
-                    </label>
-                    {{ form_errors(form.type) }}
                 </div>
                 <div class="form-group">
                     {# Site #}
@@ -61,16 +56,18 @@
                     // Simulate form data, but only include the selected site value.
                     let data = {};
                     data['site'] = $site.val();
+                    console.log(data);
                     // Submit data via AJAX to the form's action path.
                     $.ajax({
-                        url : $form.attr('action'),
+                        url : "{{ url('site_ajax_call') }}?site_id="+data['site'],
                         type: $form.attr('method'),
-                        data : data,
-                        success: function(html) {
+                        success: function(data) {
                             // Replace current position field ...
-                            $('#recherche_poste').replaceWith(
+                            $('#recherche_poste').html('');
                                 // ... with the returned one from the AJAX response.
-                                $(html).find('#recherche_poste')
+                            $.each(data, function (k, v) {
+                                    $('#recherche_poste').append('<option value="' + v + '">' + k + '</option>')
+                                }
                             );
                             // Poste field now displays the appropriate postes.
                         }

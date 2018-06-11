@@ -15,8 +15,8 @@ use App\Repository\PosteRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormEvent;
@@ -28,10 +28,6 @@ class RechercheType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choiceSites = [];
-        foreach ($options['sites'] as $site) {
-            $choiceSites[] = $site;
-        }
         $builder->add('debut', DateType::class, [
                 'label' => 'Date Début',
                 'widget' => 'single_text',
@@ -45,19 +41,14 @@ class RechercheType extends AbstractType
                 // adds a class that can be selected in JavaScript
                 'attr' => ['class' => 'js-datepicker'],
             ])
-            ->add('type', ChoiceType::class, [
-                'label' => 'Type de Recherche',
-                'choices' => [
-                    'Recherche Site' => 'site',
-                    'Recherche Globale' => 'global',
-                    'Recherche Poste' => 'poste',
-                ],
-                'expanded' => true,
+            ->add('type', HiddenType::class, [
                 'empty_data' => 'global',
                 'data' => 'global',
             ])
-            ->add('site', ChoiceType::class, [
-                'choices' => $choiceSites,
+            ->add('site', EntityType::class, [
+               'query_builder' => function (EntityRepository $entityManager) {
+                   return $entityManager->createQueryBuilder('s')->orderBy('s.nomSite', 'ASC');
+               },
                 'choice_label' => function (?Site $site) {
                     return $site->getNomSite();
                 },
@@ -65,8 +56,8 @@ class RechercheType extends AbstractType
                     return ['class' => 'site_'.strtolower($site->getNomSite())];
                 },
                 'placeholder' => 'Choisir un Site',
+                'class' => 'App\Entity\Site',
                 ]
-
             )
             ->add('rechercher', SubmitType::class);
 
@@ -100,9 +91,21 @@ class RechercheType extends AbstractType
             function (FormEvent $event) use ($formModifier) {
                 $site = $event->getForm()->getData();
 
-                dump($site);
                 $formModifier($event->getForm()->getParent(), $site);
             });
+        $builder->addEventListener(FormEvents::POST_SUBMIT,
+            function (FormEvent $event) {
+                $site = $event->getData()->getSite();
+                $poste = $event->getData()->getPoste();
+
+                if ($site) {
+                    $event->getData()->setType('site');
+                }
+                if ($poste) {
+                    $event->getData()->setType('poste');
+                }
+            })
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

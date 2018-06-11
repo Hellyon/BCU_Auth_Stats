@@ -33,7 +33,7 @@ class SessionRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function rushHours(Site $site)
+    public function rushHours(Site $site): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery("SELECT SUM(CASE WHEN s.heureDebut BETWEEN '08:00:00' AND '10:00:00' THEN 1 ELSE 0 END) AS H8,
