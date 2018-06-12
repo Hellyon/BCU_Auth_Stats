@@ -8,8 +8,8 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Recherche.
@@ -31,38 +31,82 @@ class Recherche
     protected $fin;
 
     /**
-     * @return \DateTime
+     * @Assert\Type("App\Entity\Poste")
      */
-    public function getDebut(): ?\DateTime
+    protected $poste;
+    /**
+     * @Assert\Type("App\Entity\Site")
+     */
+    protected $site;
+    /**
+     * @Assert\Type("String")
+     */
+    protected $type;
+
+    /**
+     * @return string
+     */
+    public function getType(): string
     {
-        return $this->debut;
+        return $this->type;
     }
 
     /**
-     * @param mixed $debut
+     * type Setter.
+     *
+     * @param string $type
      */
-    public function setDebut($debut): void
+    public function setType(string $type): void
     {
-        $this->debut = $debut;
+        $this->type = $type;
     }
 
     /**
-     * @return \DateTime
+     * Poste Getter.
+     *
+     * @return null|Poste
      */
-    public function getFin(): ?\DateTime
+    public function getPoste(): ?Poste
     {
-        return $this->fin;
+        return $this->poste;
     }
 
     /**
-     * @param mixed $fin
+     * poste Setter.
+     *
+     * @param Poste $poste
      */
-    public function setFin($fin): void
+    public function setPoste(Poste $poste): void
     {
-        $this->fin = $fin;
+        $this->poste = $poste;
     }
 
-    public function validate(ExecutionContextInterface $context, $payload)
+    /**
+     * site Getter.
+     *
+     * @return null|Site
+     */
+    public function getSite(): ?Site
+    {
+        return $this->site;
+    }
+
+    /**
+     * site Setter.
+     *
+     * @param Site $site
+     */
+    public function setSite(Site $site): void
+    {
+        $this->site = $site;
+    }
+
+    /**
+     * validates the data sent from the form.
+     *
+     * @param ExecutionContextInterface $context
+     */
+    public function validate(ExecutionContextInterface $context)
     {
         if ($this->getFin() && $this->getDebut()) {
             if ($this->getDebut()->getTimestamp() > $this->getFin()->getTimestamp()) {
@@ -70,5 +114,53 @@ class Recherche
                     ->addViolation();
             }
         }
+        if ('poste' == $this->getType() && !$this->getPoste()) {
+            $context->buildViolation('Aucun poste sélectionné !')
+                ->addViolation();
+        }
+        if ('site' == $this->getType() && !$this->getSite()) {
+            $context->buildViolation('Aucun site sélectionné !')
+                ->addViolation();
+        }
+    }
+
+    /**
+     * fin Getter.
+     *
+     * @return null|\DateTime
+     */
+    public function getFin(): ?\DateTime
+    {
+        return $this->fin;
+    }
+
+    /**
+     * fin Setter.
+     *
+     * @param null|\DateTime $fin
+     */
+    public function setFin(?\DateTime $fin): void
+    {
+        $this->fin = $fin;
+    }
+
+    /**
+     * debut Getter.
+     *
+     * @return \DateTime
+     */
+    public function getDebut(): \DateTime
+    {
+        return $this->debut;
+    }
+
+    /**
+     * debut Setter.
+     *
+     * @param null|\DateTime $debut
+     */
+    public function setDebut(\DateTime $debut): void
+    {
+        $this->debut = $debut;
     }
 }

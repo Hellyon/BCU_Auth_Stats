@@ -13,24 +13,24 @@ class RecapitulatifController extends Controller
     /**
      * @Route("/{_locale}/recap/chart/{codePoste}", defaults={"_locale": "fr"}, name="recap_chart")
      *
-     * @param $codePoste
+     * @param string $codePoste
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recapChartAction($codePoste)
+    public function recapChartAction(string $codePoste)
     {
         $poste = $this->getDoctrine()->getRepository(Poste::class)->find($codePoste);
         if (!$poste) {
             throw $this->createNotFoundException('Pas de poste trouvé pour le code'.$codePoste);
         }
         $useRateMessage = '';
-        $check = $this->getDoctrine()->getRepository(Recapitulatif::class)->minDureeOuverturePoste($codePoste);
+        $check = $this->getDoctrine()->getRepository(Recapitulatif::class)->minDureeOuverturePoste($poste);
         if (!empty($check[1])) {
             if (1 == $check[1]) {
                 $useRateMessage = 'Horaires d\'ouverture dépassées, veuillez les mettre à jour via le script afin de profiter de la fonctionnalité';
             } else {
-                $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)->calculateUseRate($codePoste);
-                $useRateMessage = 'Le Poste a été utilisé à '.$useRate['useRate'].'% au cours de la dernière semaine';
+                $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)->calculateUseRate($poste);
+                $useRateMessage = 'Le Poste a été utilisé à '.$useRate['useRate'].'% du temps disponible au cours de la dernière semaine';
             }
         }
         if (!$useRateMessage) {
@@ -59,7 +59,7 @@ class RecapitulatifController extends Controller
     }
 
     /**
-     * @param $poste
+     * @param Poste $poste
      *
      * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart
      */
@@ -77,11 +77,11 @@ class RecapitulatifController extends Controller
         }
         $title = 'Répartition du temps de connexion quotidien sur une semaine';
 
-        return ChartBuilder::createPieChart($title, $dataTable);
+        return ChartBuilder::buildPieChart($title, $dataTable);
     }
 
     /**
-     * @param $poste
+     * @param Poste $poste
      *
      * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart
      */
@@ -98,12 +98,7 @@ class RecapitulatifController extends Controller
             $dataTable[] = [$jour, $recapitulatif->getDureeCumul() / 3600, $recapitulatif->getNbConnexions()];
         }
         $title = 'Temps d\'utilisation et nombre de sessions par jour';
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes = ['x' => [
-        'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
-        'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
-    ];
 
-        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
+        return ChartBuilder::buildBarChart($title, $dataTable);
     }
 }

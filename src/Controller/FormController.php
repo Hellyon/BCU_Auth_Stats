@@ -3,12 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\ChartBuilder;
+use App\Entity\Poste;
 use App\Entity\Recapitulatif;
 use App\Entity\Recherche;
+use App\Entity\Site;
+use App\Form\RechercheType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class FormController extends Controller
@@ -22,23 +25,54 @@ class FormController extends Controller
      */
     public function newFormAction(Request $request)
     {
-        $formulaire = $this->createRequestForm();
+        $formulaire = $this->createRequestForm(null);
         $formulaire->handleRequest($request);
         $fail = false;
 
         if ($formulaire->isSubmitted() && $formulaire->isValid()) {
-            // $form->getData() holds the submitted values
-            // but, the original `$task` variable has also been updated
             $recherche = $formulaire->getData();
 
-            if (!$recherche->getFin() || $recherche->getFin() == $recherche->getDebut()) {
-                return $this->redirect($this->generateUrl('date', [
-                    'date' => $recherche->getDebut()->getTimeStamp(),
-                ]));
-            } else {
-                return $this->redirect($this->generateUrl('periode', [
-                    'fin' => $recherche->getDebut()->getTimeStamp(),
-                    'debut' => $recherche->getFin()->getTimeStamp(), ]));
+            switch ($recherche->getType()) {
+                case 'global':
+                    if (!$recherche->getFin() || $recherche->getFin() == $recherche->getDebut()) {
+                        return $this->redirect($this->generateUrl('date', [
+                            'date' => $recherche->getDebut()->getTimeStamp(),
+                        ]));
+                    } else {
+                        return $this->redirect($this->generateUrl('periode', [
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
+                        ]));
+                    }
+                    break;
+                case 'site':
+                    if (!$recherche->getFin() || $recherche->getFin() == $recherche->getDebut()) {
+                        return $this->redirect($this->generateUrl('date', [
+                            'date' => $recherche->getDebut()->getTimeStamp(),
+                            'site' => $recherche->getSite()->getIdSite(),
+                        ]));
+                    } else {
+                        return $this->redirect($this->generateUrl('periode', [
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
+                            'site' => $recherche->getSite()->getIdSite(),
+                        ]));
+                    }
+                    break;
+                case 'poste':
+                    if (!$recherche->getFin() || $recherche->getFin() == $recherche->getDebut()) {
+                        return $this->redirect($this->generateUrl('date', [
+                            'date' => $recherche->getDebut()->getTimeStamp(),
+                            'poste' => $recherche->getPoste()->getCodePoste(),
+                        ]));
+                    } else {
+                        return $this->redirect($this->generateUrl('periode', [
+                            'debut' => $recherche->getDebut()->getTimeStamp(),
+                            'fin' => $recherche->getFin()->getTimeStamp(),
+                            'poste' => $recherche->getPoste()->getCodePoste(),
+                        ]));
+                    }
+                    break;
             }
         }
 
@@ -52,106 +86,176 @@ class FormController extends Controller
         ]);
     }
 
-    private function createRequestForm()
+    /**
+     * @Route("/{_locale}/date/{date}/{site}/{poste}", name="date", defaults={"_locale": "fr", "site": "0", "poste": "NOPOSTE"})
+     *
+     * @param int    $date
+     * @param int    $site
+     * @param string $poste
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function rechercheDate(int $date, ?int $site, ?string $poste)
     {
         $recherche = new Recherche();
-        $recherche->setFin(new \DateTime());
-        $recherche->setDebut(new \DateTime('-7 Day'));
-
-        return $this->createFormBuilder($recherche)
-            ->setAction($this->generateUrl('recherche_globale'))
-            ->add('debut', DateType::class, [
-                'label' => 'Date Début',
-                'widget' => 'single_text',
-                // adds a class that can be selected in JavaScript
-                'attr' => ['class' => 'js-datepicker'],
-            ])
-            ->add('fin', DateType::class, [
-                'label' => 'Date Fin',
-                'widget' => 'single_text',
-                'required' => false,
-                // adds a class that can be selected in JavaScript
-                'attr' => ['class' => 'js-datepicker'],
-            ])
-            ->add('rechercher', SubmitType::class)
-            ->getForm();
-    }
-
-    /**
-     * @Route("/{_locale}/date/{date}", name="date", defaults={"_locale": "fr"})
-     * @
-     *
-     * @param $date
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function rechercheDate($date)
-    {
-        $formulaire = $this->createRequestForm();
-        $requestChart = $this->createRequestedDateChart($date);
-
-        return $this->render('form/form.html.twig', [
-            'form' => $formulaire->createView(),
-            'requestChart' => $requestChart,
-        ]);
-    }
-
-    private function createRequestedDateChart($date)
-    {
-        $dateD = strftime('%Y-%m-%d', $date);
-
-        $recapitulatifs = $this->getDoctrine()
-            ->getRepository(Recapitulatif::class)
-            ->findByDate($dateD);
-
-        setlocale(LC_TIME, 'fr_FR.utf8');
-        $date = strftime('%A %e %B', $date);
-
-        $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de sessions']];
-        foreach ($recapitulatifs as $recapitulatif) {
-            $dataTable[] = [$recapitulatif['nomSite'], $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
+        $jour = new \DateTime();
+        $jour->setTimestamp($date);
+        $recherche->setDebut($jour);
+        if ($site) {
+            $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
         }
-        $title = 'Nombre de sessions et temps de connexion du '.$date.' pour chaque site';
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes = ['x' => [
-            'sessions' => ['side' => 'top', 'label' => 'Nombre de sessions'], ],
-            'heures' => ['side' => 'top', 'label' => 'Nombre d\'heures'],
-        ];
+        if ('NOPOSTE' != $poste) {
+            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+        }
+        $formulaire = $this->createRequestForm($recherche);
+        $requestChart = $this->createRequestedDateChart($date, $site, $poste);
 
-        return ChartBuilder::createBarChart($title, $dataTable, $series, $axes);
+        if ($requestChart) {
+            return $this->render('form/form.html.twig', [
+                'form' => $formulaire->createView(),
+                'requestChart' => $requestChart,
+            ]);
+        } else {
+            return $this->render('form/form.html.twig', [
+                'form' => $formulaire->createView(),
+                'requestChart' => $requestChart,
+                'noDataFound' => 'Aucune donnée trouvée pour la date indiquée !',
+            ]);
+        }
     }
 
     /**
-     * @Route("/{_locale}/periode/{debut}/{fin}", name="periode", defaults={"_locale": "fr"})
+     * @Route("/{_locale}/periode/{debut}/{fin}/{site}/{poste}", name="periode", defaults={"_locale": "fr", "site": "0", "poste": "NOPOSTE"})
      *
-     * @param $debut
-     * @param $fin
+     * @param int    $debut
+     * @param int    $fin
+     * @param int    $site
+     * @param string $poste
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function recherchePeriode($debut, $fin)
+    public function recherchePeriode(int $debut, int $fin, ?int $site, ?string $poste)
     {
-        $formulaire = $this->createRequestForm();
-        $requestChart = $this->createRequestedLineChart($debut, $fin);
+        $recherche = new Recherche();
 
-        return $this->render('form/form.html.twig', [
-            'form' => $formulaire->createView(),
-            'requestChart' => $requestChart,
-        ]);
+        $jour = new \DateTime();
+        $jour->setTimestamp($debut);
+        $recherche->setDebut($jour);
+
+        $jour = new \DateTime();
+        $jour->setTimestamp($fin);
+        $recherche->setFin($jour);
+        if ($site) {
+            $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
+        }
+        if ('NOPOSTE' != $poste) {
+            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+        }
+        $formulaire = $this->createRequestForm($recherche);
+        $requestChart = $this->createRequestedPeriodeChart($debut, $fin, $site, $poste);
+
+        if ($requestChart) {
+            return $this->render('form/form.html.twig', [
+                'form' => $formulaire->createView(),
+                'requestChart' => $requestChart,
+            ]);
+        } else {
+            return $this->render('form/form.html.twig', [
+                'form' => $formulaire->createView(),
+                'requestChart' => $requestChart,
+                'noDataFound' => 'Aucune donnée trouvée pour la période indiquée!',
+            ]);
+        }
     }
 
-    private function createRequestedLineChart($debut, $fin)
+    /**
+     * @Route("/{_locale}/siteAjax", name="site_ajax_call")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function ajaxAction(Request $request)
     {
+        if (!$request->isXmlHttpRequest()) {
+            throw new NotFoundHttpException();
+        }
+
+        $id = $request->query->get('site_id');
+        $postesResponse = [];
+        $postes = $this->getDoctrine()->getRepository(Poste::class)->findBySite($id)->getQuery()->getResult();
+
+        $postesResponse['Choisir un Poste'] = '';
+        foreach ($postes as $poste) {
+            $postesResponse[$poste->getCodePoste()] = $poste->getCodePoste();
+        }
+
+        return new JsonResponse($postesResponse);
+    }
+
+    /**
+     * @return \Symfony\Component\Form\FormInterface
+     */
+    private function createRequestForm(?Recherche $recherche)
+    {
+        if (!$recherche) {
+            $recherche = new Recherche();
+            $recherche->setFin(new \DateTime());
+            $recherche->setDebut(new \DateTime('-7 Day'));
+        }
+
+        $recherche->setType('Recherche Globale');
+
+        return $this->createForm(RechercheType::class, $recherche);
+    }
+
+    /**
+     * @param int    $debut
+     * @param int    $fin
+     * @param int    $site
+     * @param string $poste
+     *
+     * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\LineChart
+     */
+    private function createRequestedPeriodeChart(int $debut, int $fin, ?int $site, ?string $poste)
+    {
+        // Recuperation de la date au format YYYY-MM-DD
         $debutD = strftime('%Y-%m-%d', $debut);
         $finD = strftime('%Y-%m-%d', $fin);
-
-        $recapitulatifs = $this->getDoctrine()
-            ->getRepository(Recapitulatif::class)
-            ->findByPeriod($debutD, $finD);
-
+        // Recuperation de la date au format local fr_FR
         setlocale(LC_TIME, 'fr_FR.utf8');
         $debut = strftime('%A %e %B', $debut);
         $fin = strftime('%A %e %B', $fin);
+
+        if ($site) {
+            $site = $this->getDoctrine()->getRepository(Site::class)
+                ->find($site);
+
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByPeriodeAndSite($debutD, $finD, $site);
+
+            $title = 'Evolution de l\'utilisation des postes pour la '.$site->getNomSIte().' du '.$fin.' au '.$debut;
+        } elseif ('NOPOSTE' != $poste) {
+            $poste = $this->getDoctrine()->getRepository(Poste::class)
+                ->findOneByCodePoste($poste);
+
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByPeriodeAndPoste($debutD, $finD, $poste);
+
+            $title = 'Evolution de l\'utilisation des postes pour le poste '.$poste->getCodePoste().' du '.$fin.' au '.$debut;
+        } else {
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByPeriode($debutD, $finD);
+
+            $title = 'Evolution globale de l\'utilisation des postes du '.$fin.' au '.$debut;
+        }
+
+        if (count($recapitulatifs) <= 1) {
+            return null;
+        }
 
         $dataTable = [['Jour', 'Nombre d\'heures', 'Nombre de sessions']];
         foreach ($recapitulatifs as $recapitulatif) {
@@ -159,13 +263,75 @@ class FormController extends Controller
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
 
-        $title = 'Evolution du nombre de sessions et du temps de connexion du '.$fin.' au '.$debut;
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes = ['y' => [
-            'heures' => ['label' => 'Nombre d\'heures'],
-            'sessions' => ['label' => 'Nombre de sessions'], ],
-        ];
+        return ChartBuilder::buildLineChart($title, $dataTable);
+    }
 
-        return ChartBuilder::createLineChart($title, $dataTable, $series, $axes);
+    /**
+     * @param int    $date
+     * @param int    $site
+     * @param string $poste
+     *
+     * @return \CMEN\GoogleChartsBundle\GoogleCharts\Charts\Material\BarChart
+     */
+    private function createRequestedDateChart(int $date, ?int $site, ?string $poste)
+    {
+        // Recuperation de la date au format YYYY-MM-DD
+        $dateD = strftime('%Y-%m-%d', $date);
+        // Recuperation de la date au format local fr_FR
+        setlocale(LC_TIME, 'fr_FR.utf8');
+        $date = strftime('%A %e %B', $date);
+
+        if ($site) {
+            $site = $this->getDoctrine()->getRepository(Site::class)
+                ->find($site);
+
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByDateAndSite($dateD, $site);
+
+            // Si aucune donnee trouvee
+            if (!$recapitulatifs) {
+                return null;
+            }
+
+            $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de sessions']];
+            foreach ($recapitulatifs as $recapitulatif) {
+                $dataTable[] = [$site->getNomSite(), $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
+            }
+            $title = 'Nombre de sessions et temps de connexion du '.$date.' pour '.$site->getNomSite();
+        } elseif ('NOPOSTE' != $poste) {
+            $poste = $this->getDoctrine()->getRepository(Poste::class)
+                ->findOneByCodePoste($poste);
+
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByDateAndPoste($dateD, $poste);
+
+            if (!$recapitulatifs) {
+                return null;
+            }
+
+            $dataTable = [['Poste', 'Nombre d\'heures', 'Nombre de sessions']];
+            foreach ($recapitulatifs as $recapitulatif) {
+                $dataTable[] = [$poste->getCodePoste(), $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
+            }
+            $title = 'Nombre de sessions et temps de connexion du '.$date.' pour le poste '.$poste->getCodePoste();
+        } else {
+            $recapitulatifs = $this->getDoctrine()
+                ->getRepository(Recapitulatif::class)
+                ->findByDate($dateD);
+
+            if (!$recapitulatifs) {
+                return null;
+            }
+
+            $dataTable = [['Site', 'Nombre d\'heures', 'Nombre de sessions']];
+            foreach ($recapitulatifs as $recapitulatif) {
+                $dataTable[] = [$recapitulatif['nomSite'], $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
+            }
+            $title = 'Nombre de sessions et temps de connexion du '.$date;
+        }
+
+        return ChartBuilder::buildBarChart($title, $dataTable);
     }
 }

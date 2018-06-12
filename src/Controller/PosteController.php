@@ -17,7 +17,7 @@ class PosteController extends Controller
     /**
      * Affiche  les différents postes publics dans la liste des postes du site.
      *
-     * @param $site
+     * @param Site $site
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */

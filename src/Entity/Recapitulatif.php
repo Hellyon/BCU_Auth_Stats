@@ -59,32 +59,62 @@ class Recapitulatif
      */
     private $codePoste;
 
-    public function getIdRecap(): ?int
+    /**
+     * idRecap Getter.
+     *
+     * @return int
+     */
+    public function getIdRecap(): int
     {
         return $this->idRecap;
     }
 
-    public function getDureeCumul(): ?int
+    /**
+     * dureeCumul Getter.
+     *
+     * @return int
+     */
+    public function getDureeCumul(): int
     {
         return $this->dureeCumul;
     }
 
-    public function getNbConnexions(): ?int
+    /**
+     * nbConnexions Getter.
+     *
+     * @return int
+     */
+    public function getNbConnexions(): int
     {
         return $this->nbConnexions;
     }
 
-    public function getDureeOuverture(): ?int
+    /**
+     * dureeOuverture Getter.
+     *
+     * @return int
+     */
+    public function getDureeOuverture(): int
     {
         return $this->dureeOuverture;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    /**
+     * date Getter.
+     *
+     * @return \DateTimeInterface
+     */
+    public function getDate(): \DateTimeInterface
     {
         return $this->date;
     }
 
-    public function getCodePoste(): ?Poste
+    /**
+     * codePoste Getter.
+     *
+     * @return Poste
+     */
+    public function getCodePoste(): Poste
     {
         return $this->codePoste;
     }

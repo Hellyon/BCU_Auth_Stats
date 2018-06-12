@@ -44,7 +44,7 @@ class MainController extends Controller
         $today = strftime('%A %e %B');
         $title = 'Répartition du temps de connexion par site du '.$last_week.' au '.$today;
 
-        return ChartBuilder::createPieChart($title, $dataTable);
+        return ChartBuilder::buildPieChart($title, $dataTable);
     }
 
     /**
@@ -63,13 +63,7 @@ class MainController extends Controller
             $dataTable[] = [$jour, $recapitulatif[1] / 3600, $recapitulatif[2] / 1];
         }
         $title = 'Evolution du nombre de sessions et du temps de connexion sur 4 semaines';
-        $series = [['axis' => 'heures'], ['axis' => 'sessions']];
-        $axes = ['y' => [
-            'heures' => ['label' => 'Nombre d\'heures'],
-            'sessions' => ['label' => 'Nombre de sessions'],
-            ],
-        ];
 
-        return ChartBuilder::createLineChart($title, $dataTable, $series, $axes);
+        return ChartBuilder::buildLineChart($title, $dataTable);
     }
 }

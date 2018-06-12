@@ -15,12 +15,25 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class SessionRepository extends ServiceEntityRepository
 {
+    /**
+     * SessionRepository constructor.
+     *
+     * @param RegistryInterface $registry
+     */
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Session::class);
     }
 
-    public function rushHours(Site $site)
+    /**
+     * @param Site $site
+     *
+     * @return mixed
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function rushHours(Site $site): array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery("SELECT SUM(CASE WHEN s.heureDebut BETWEEN '08:00:00' AND '10:00:00' THEN 1 ELSE 0 END) AS H8,

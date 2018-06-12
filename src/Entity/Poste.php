@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Poste.
  *
  * @ORM\Table(name="Poste", uniqueConstraints={@ORM\UniqueConstraint(name="code_poste", columns={"code_poste"}), @ORM\UniqueConstraint(name="ip", columns={"ip"})}, indexes={@ORM\Index(name="id_site", columns={"id_site"})})
- * @ORM\Entity
- */
+ * @ORM\Entity(repositoryClass="App\Repository\PosteRepository") */
 class Poste
 {
     /**
@@ -38,17 +37,32 @@ class Poste
      */
     private $idSite;
 
-    public function getCodePoste(): ?string
+    /**
+     * codePoste Getter.
+     *
+     * @return string
+     */
+    public function getCodePoste(): string
     {
         return $this->codePoste;
     }
 
-    public function getIp(): ?string
+    /**
+     * ip Getter.
+     *
+     * @return string
+     */
+    public function getIp(): string
     {
         return $this->ip;
     }
 
-    public function getIdSite(): ?Site
+    /**
+     * idSite Getter.
+     *
+     * @return Site
+     */
+    public function getIdSite(): Site
     {
         return $this->idSite;
     }
