@@ -25,7 +25,7 @@ class PosteRepository extends ServiceEntityRepository
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function findBySite(?Site $site)
+    public function findBySite(?int $site)
     {
         return  $this->createQueryBuilder('p')
             ->andWhere('p.idSite = :site')

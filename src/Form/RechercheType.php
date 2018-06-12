@@ -72,7 +72,7 @@ class RechercheType extends AbstractType
                 },
                 'query_builder' => function (PosteRepository $entityRepository) use ($site) {
                     if ($site) {
-                        return $entityRepository->findBySite($site);
+                        return $entityRepository->findBySite($site->getIdSite());
                     } else {
                         return null;
                     }
