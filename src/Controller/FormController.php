@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Class FormController.
+ */
 class FormController extends Controller
 {
     /**
@@ -101,19 +104,36 @@ class FormController extends Controller
         $jour = new \DateTime();
         $jour->setTimestamp($date);
         $recherche->setDebut($jour);
+
         if ($site) {
             $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
         }
         if ('NOPOSTE' != $poste) {
-            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+            $posteD = $this->getDoctrine()->getRepository(Poste::class)->find($poste);
+            $recherche->setPoste($posteD);
+
+            $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)
+                ->calculateUseRateDate($posteD, strftime('%Y-%m-%d', $date));
+            setlocale(LC_TIME, 'fr_FR.utf8');
+            $info = $posteD->getCodePoste().' a été utilisé à '.$useRate['useRate'].'% du temps disponible le '.
+                strftime('%A %e %B', $date);
         }
         $formulaire = $this->createRequestForm($recherche);
         $requestChart = $this->createRequestedDateChart($date, $site, $poste);
 
         if ($requestChart) {
+            if ('NOPOSTE' != $poste) {
+            }
+            if ($site) {
+                $usedPostes = $this->getDoctrine()->getRepository(Site::class)->countUsedPostesDate($site, strftime('%Y-%m-%d', $date));
+                $totalPostes = $this->getDoctrine()->getRepository(Poste::class)->findBy(['idSite' => $site]);
+                $info = $this->getUsedPostesInfo($usedPostes['used'], count($totalPostes));
+            }
+
             return $this->render('form/form.html.twig', [
                 'form' => $formulaire->createView(),
                 'requestChart' => $requestChart,
+                'info' => $info,
             ]);
         } else {
             return $this->render('form/form.html.twig', [
@@ -145,19 +165,37 @@ class FormController extends Controller
         $jour = new \DateTime();
         $jour->setTimestamp($fin);
         $recherche->setFin($jour);
+
         if ($site) {
             $recherche->setSite($this->getDoctrine()->getRepository(Site::class)->find($site));
         }
         if ('NOPOSTE' != $poste) {
-            $recherche->setPoste($this->getDoctrine()->getRepository(Poste::class)->find($poste));
+            $posteD = $this->getDoctrine()->getRepository(Poste::class)->find($poste);
+
+            $recherche->setPoste($posteD);
         }
         $formulaire = $this->createRequestForm($recherche);
         $requestChart = $this->createRequestedPeriodeChart($debut, $fin, $site, $poste);
 
         if ($requestChart) {
+            if ('NOPOSTE' != $poste) {
+                $useRate = $this->getDoctrine()->getRepository(Recapitulatif::class)
+                    ->calculateUseRatePeriode($posteD, strftime('%Y-%m-%d', $debut), strftime('%Y-%m-%d', $fin));
+                setlocale(LC_TIME, 'fr_FR.utf8');
+                $info = $posteD->getCodePoste().' a été utilisé à '.$useRate['useRate'].'% du temps disponible entre le '.
+                    strftime('%A %e %B', $debut).' et le '.strftime('%A %e %B', $fin);
+            }
+            if ($site) {
+                $usedPostes = $this->getDoctrine()->getRepository(Site::class)
+                    ->countUsedPostesPeriode($site, strftime('%Y-%m-%d', $debut), strftime('%Y-%m-%d', $fin));
+                $totalPostes = $this->getDoctrine()->getRepository(Poste::class)->findBy(['idSite' => $site]);
+                $info = $this->getUsedPostesInfo($usedPostes['used'], count($totalPostes));
+            }
+
             return $this->render('form/form.html.twig', [
                 'form' => $formulaire->createView(),
                 'requestChart' => $requestChart,
+                'info' => $info,
             ]);
         } else {
             return $this->render('form/form.html.twig', [
@@ -194,6 +232,8 @@ class FormController extends Controller
     }
 
     /**
+     * @param Recherche $recherche
+     *
      * @return \Symfony\Component\Form\FormInterface
      */
     private function createRequestForm(?Recherche $recherche)
@@ -235,7 +275,7 @@ class FormController extends Controller
                 ->getRepository(Recapitulatif::class)
                 ->findByPeriodeAndSite($debutD, $finD, $site);
 
-            $title = 'Evolution de l\'utilisation des postes pour la '.$site->getNomSIte().' du '.$fin.' au '.$debut;
+            $title = 'Evolution de l\'utilisation des postes pour la '.$site->getNomSIte().' du '.$debut.' au '.$fin;
         } elseif ('NOPOSTE' != $poste) {
             $poste = $this->getDoctrine()->getRepository(Poste::class)
                 ->findOneByCodePoste($poste);
@@ -244,13 +284,13 @@ class FormController extends Controller
                 ->getRepository(Recapitulatif::class)
                 ->findByPeriodeAndPoste($debutD, $finD, $poste);
 
-            $title = 'Evolution de l\'utilisation des postes pour le poste '.$poste->getCodePoste().' du '.$fin.' au '.$debut;
+            $title = 'Evolution de l\'utilisation des postes pour le poste '.$poste->getCodePoste().' du '.$debut.' au '.$fin;
         } else {
             $recapitulatifs = $this->getDoctrine()
                 ->getRepository(Recapitulatif::class)
                 ->findByPeriode($debutD, $finD);
 
-            $title = 'Evolution globale de l\'utilisation des postes du '.$fin.' au '.$debut;
+            $title = 'Evolution globale de l\'utilisation des postes du '.$debut.' au '.$fin;
         }
 
         if (count($recapitulatifs) <= 1) {
@@ -333,5 +373,22 @@ class FormController extends Controller
         }
 
         return ChartBuilder::buildBarChart($title, $dataTable);
+    }
+
+    /**
+     * @param int $usedPostes
+     * @param int $totalPostes
+     *
+     * @return string
+     */
+    private function getUsedPostesInfo(int $usedPostes, int $totalPostes): string
+    {
+        if ($usedPostes == $totalPostes) {
+            return 'Tous les postes en libre accès ont été utilisés';
+        } elseif (0 == $usedPostes) {
+            return 'Aucun poste en libre accès n\'a été utilisé';
+        } else {
+            return $usedPostes.' sur '.$totalPostes.' postes en libre accès ont été utilisés';
+        }
     }
 }

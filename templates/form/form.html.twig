@@ -81,6 +81,10 @@
         {% block requestChart %}
         {% if requestChart is defined %}
             {% if noDataFound is not defined %}
+                {% if info is defined %}
+                    <p class="col-md-6 alert-warning text-center">{{ info }}</p>
+                <br/>
+            {% endif %}
             <div id="div_requestChart" class="col-md-6 col-lg-offset-0"></div>
 
             <script type="text/javascript">

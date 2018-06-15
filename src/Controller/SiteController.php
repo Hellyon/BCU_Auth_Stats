@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ChartBuilder;
+use App\Entity\Poste;
 use App\Entity\Recapitulatif;
 use App\Entity\Session;
 use App\Entity\Site;
@@ -27,6 +28,11 @@ class SiteController extends Controller
             throw $this->createNotFoundException('Pas de site trouvé pour l\'id'.$idSite);
         }
 
+        $usedPostes = $this->getDoctrine()->getRepository(Site::class)->countUsedPostes($site);
+        $totalPostes = $this->getDoctrine()->getRepository(Poste::class)->findBy(['idSite' => $site]);
+
+        $info = $this->getUsedPostesMessage($usedPostes, count($totalPostes));
+
         $evolutionChart = $this->createWeeklyEvolutionBarChart($site);
         $rushHoursChart = $this->createWeeklyRushHourBarChart($site);
 
@@ -34,6 +40,7 @@ class SiteController extends Controller
             'evolutionChart' => $evolutionChart,
             'rushHoursChart' => $rushHoursChart,
             'site' => $site,
+            'info' => $info,
         ]);
     }
 
@@ -90,5 +97,22 @@ class SiteController extends Controller
         return $this->render('header.html.twig', [
             'liste_sites' => $sites,
         ]);
+    }
+
+    /**
+     * @param $usedPostes
+     * @param $totalPostes
+     *
+     * @return string
+     */
+    private function getUsedPostesMessage($usedPostes, $totalPostes)
+    {
+        if ($usedPostes['used'] == $totalPostes) {
+            return 'Tous les postes en libre accès ont été utilisés au cours de la dernière semaine';
+        } elseif (0 == $usedPostes['used']) {
+            return 'Aucun poste en libre accès n\'a été utilisé au cours de la dernière semaine';
+        } else {
+            return $usedPostes['used'].' sur '.$totalPostes.' postes en libre accès ont été utilisés au cours de la dernière semaine';
+        }
     }
 }
