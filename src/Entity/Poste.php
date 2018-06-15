@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * Poste.
  *
  * @ORM\Table(name="Poste", uniqueConstraints={@ORM\UniqueConstraint(name="code_poste", columns={"code_poste"}), @ORM\UniqueConstraint(name="ip", columns={"ip"})}, indexes={@ORM\Index(name="id_site", columns={"id_site"})})
- * @ORM\Entity(repositoryClass="App\Repository\PosteRepository") */
+ * @ORM\Entity(repositoryClass="App\Repository\PosteRepository")
+ */
 class Poste
 {
     /**

@@ -3,6 +3,7 @@
 {% block body %}
     {{ parent() }}
     <p class="text-center h1">{{ site.nomSite }}</p>
+    <p class="col-md-12 alert-warning text-center">{{ info }}</p>
     <div class="container-fluid">
         <div id="div_evolutionChart" class="col-lg-6"></div>
         <div id="div_rushHoursChart" class="col-lg-6"></div>

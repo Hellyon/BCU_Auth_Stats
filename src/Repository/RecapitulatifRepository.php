@@ -266,7 +266,7 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function minDureeOuverturePoste(Poste $poste): array
+    public function minDureeOuverturePoste(Poste $poste): ?array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -287,10 +287,9 @@ class RecapitulatifRepository extends ServiceEntityRepository
      *
      * @return mixed
      *
-     * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function calculateUseRate(Poste $poste): array
+    public function calculateUseRate(Poste $poste): ?array
     {
         $entityManager = $this->getEntityManager();
         $query = $entityManager->createQuery(
@@ -305,6 +304,58 @@ class RecapitulatifRepository extends ServiceEntityRepository
             ->setParameter('current_date', new \DateTime());
 
         // returns an array of SUM(r.dureeCumul), SUM(r.dureeOuverture)
-        return $query->getSingleResult();
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     * @param Poste  $poste
+     * @param string $date
+     *
+     * @return mixed
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function calculateUseRateDate(Poste $poste, string $date): ?array
+    {
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT SUM(r.dureeCumul)/ SUM(r.dureeOuverture)*100 AS useRate
+            FROM App\Entity\Recapitulatif r
+            WHERE r.codePoste = :poste
+            AND r.date = :date 
+            GROUP BY r.codePoste 
+            ORDER BY r.date ASC')
+            ->setParameter('poste', $poste)
+            ->setParameter('date', new \DateTime($date));
+
+        // returns an array of SUM(r.dureeCumul), SUM(r.dureeOuverture)
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     * @param Poste  $poste
+     * @param string $debut
+     * @param string $fin
+     *
+     * @return mixed
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function calculateUseRatePeriode(Poste $poste, string $debut, string $fin): ?array
+    {
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT SUM(r.dureeCumul)/ SUM(r.dureeOuverture)*100 AS useRate
+            FROM App\Entity\Recapitulatif r
+            WHERE r.codePoste = :poste
+            AND r.date BETWEEN :debut AND :fin 
+            GROUP BY r.codePoste 
+            ORDER BY r.date ASC')
+            ->setParameter('poste', $poste)
+            ->setParameter('debut', new \DateTime($debut))
+            ->setParameter('fin', new \DateTime($fin));
+
+        // returns an array of SUM(r.dureeCumul), SUM(r.dureeOuverture)
+        return $query->getOneOrNullResult();
     }
 }
